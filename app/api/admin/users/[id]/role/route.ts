@@ -39,7 +39,7 @@ async function handlePatch(
     const adminCount = await User.count({
       where: {
         role: "admin",
-        status: { [Op.ne]: "suspended" } as any,
+        status: "active",
         id: { [Op.ne]: target.id },
       },
       transaction: tx,

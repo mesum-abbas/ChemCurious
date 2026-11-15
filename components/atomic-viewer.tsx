@@ -98,8 +98,8 @@ export function AtomicViewer({
   }, [isPaused])
 
   return (
-    <div className="flex flex-col items-center gap-5 text-center">
-      <div className="relative mx-auto aspect-square w-full max-w-[320px]">
+    <div className="flex w-full min-w-0 flex-col items-center gap-4 text-center sm:gap-5">
+      <div className="relative mx-auto aspect-square w-full max-w-[260px] sm:max-w-[320px]">
         <svg
           viewBox="0 0 300 300"
           role="img"
@@ -169,11 +169,11 @@ export function AtomicViewer({
         </svg>
       </div>
 
-      <div>
+      <div className="w-full min-w-0">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Electron shells
         </p>
-        <p className="mt-1 text-3xl font-bold tracking-tight">{shells.join(" • ")}</p>
+        <p className="mt-1 break-words text-2xl font-bold tracking-tight sm:text-3xl">{shells.join(" • ")}</p>
       </div>
       <Button
         type="button"

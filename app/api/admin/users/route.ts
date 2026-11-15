@@ -33,11 +33,13 @@ async function handleGet(req: Request) {
     ];
   }
 
-  if (role && ["student", "staff", "admin"].includes(role)) {
+  if (role === "staff_admin") {
+    where.role = { [Op.in]: ["staff", "admin"] };
+  } else if (role && ["student", "staff", "admin"].includes(role)) {
     where.role = role;
   }
 
-  if (status && ["active", "suspended"].includes(status)) {
+  if (status && ["active", "suspended", "pending_approval", "rejected"].includes(status)) {
     where.status = status;
   }
 
@@ -80,12 +82,15 @@ async function handleGet(req: Request) {
   }));
 
   const showStudentRank = await isStudentRankVisible();
+  // Badge count for the "Pending Approvals" tab (independent of current filters)
+  const pendingCount = await User.count({ where: { status: "pending_approval" } });
 
-  const response: Paginated<AdminUser> & { settings: { showStudentRank: boolean } } = {
+  const response: Paginated<AdminUser> & { pendingCount: number; settings: { showStudentRank: boolean } } = {
     data,
     page,
     pageSize,
     total: count,
+    pendingCount,
     settings: {
       showStudentRank,
     },

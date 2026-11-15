@@ -2,12 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ADMIN_SESSION_COOKIE, STUDENT_SESSION_COOKIE, LEGACY_SESSION_COOKIE } from "@/lib/auth-constants";
 
+// Only progress-tracking modules need an account.
+// Periodic table, reactions and 3D molecules are public (not listed here or in the matcher).
 const STUDENT_PROTECTED_ROUTES = [
-  "/periodic-table",
   "/quizzes",
-  "/reactions",
-  "/molecules",
-  "/periodic",
   "/dashboard",
 ];
 
@@ -50,6 +48,14 @@ export function middleware(request: NextRequest) {
   );
 
   if (isStudentProtected && !studentSession) {
+    // Signed-in admin/staff: these pages are student-only, so send them to their console
+    // instead of a login screen they are already past.
+    if (adminSession) {
+      const consoleUrl = request.nextUrl.clone();
+      consoleUrl.pathname = "/admin/dashboard";
+      consoleUrl.search = "";
+      return NextResponse.redirect(consoleUrl);
+    }
     const signInUrl = request.nextUrl.clone();
     signInUrl.pathname = "/auth"; 
     signInUrl.searchParams.set("redirect", pathname);
@@ -66,15 +72,7 @@ export const config = {
     "/auth",
     "/dashboard",
     "/dashboard/:path*",
-    "/periodic-table",
-    "/periodic-table/:path*",
-    "/periodic",
-    "/periodic/:path*",
     "/quizzes",
     "/quizzes/:path*",
-    "/reactions",
-    "/reactions/:path*",
-    "/molecules",
-    "/molecules/:path*",
   ],
 };

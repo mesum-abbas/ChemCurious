@@ -16,8 +16,14 @@ interface User {
 interface AuthContextType {
   user: User | null
   error: string | null
-  login: (email: string, password: string, portal?: "student" | "admin") => Promise<User | null>
-  signup: (email: string, password: string, name: string, institution: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<User | null>
+  signup: (
+    email: string,
+    password: string,
+    name: string,
+    institution: string,
+    role?: "student" | "staff" | "admin"
+  ) => Promise<{ ok: boolean; requiresApproval: boolean }>
   logout: () => void
   isLoading: boolean
 }
@@ -132,16 +138,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession()
   }, [])
 
-  const login = async (
-    email: string,
-    password: string,
-    portal: "student" | "admin" = "student"
-  ): Promise<User | null> => {
+  const login = async (email: string, password: string): Promise<User | null> => {
     setIsLoading(true)
     setError(null)
     try {
-      const endpoint = portal === "admin" ? "/api/auth/admin-login" : "/api/auth/login"
-      const response = await fetch(endpoint, {
+      // Unified endpoint: the server decides student vs admin/staff from the database
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -149,13 +151,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         const data = await response.json()
+        const u = data.user ?? data
         const userObj: User = {
-          id: String(data.id),
-          email: data.email,
-          name: data.name,
-          institution: data.institution || "",
-          role: data.role,
-          status: data.status,
+          id: String(u.id),
+          email: u.email,
+          name: u.name,
+          institution: u.institution || "",
+          role: u.role,
+          status: u.status,
         }
         setUser(userObj)
         setError(null)
@@ -180,23 +183,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     password: string,
     name: string,
-    institution: string
-  ): Promise<boolean> => {
+    institution: string,
+    role: "student" | "staff" | "admin" = "student"
+  ): Promise<{ ok: boolean; requiresApproval: boolean }> => {
     setIsLoading(true)
     setError(null)
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, institution }),
+        body: JSON.stringify({ email, password, name, institution, role }),
       })
 
       if (response.ok) {
         const data = await response.json()
-        setUser(data)
+        if (data.requiresApproval) {
+          // Staff/admin request: no session until an administrator approves it
+          setIsLoading(false)
+          return { ok: true, requiresApproval: true }
+        }
+        const u = data.user ?? data
+        setUser({ ...u, id: String(u.id) })
         setSessionPortal("student")
         setIsLoading(false)
-        return true
+        return { ok: true, requiresApproval: false }
       } else {
         const errData = await response.json().catch(() => null)
         setError(errData?.error || "Registration failed")
@@ -207,7 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     setIsLoading(false)
-    return false
+    return { ok: false, requiresApproval: false }
   }
 
   const logout = async () => {

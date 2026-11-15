@@ -21,7 +21,17 @@ import {
   AlertCircle,
   HelpCircle,
   FlaskConical,
+  Hand,
 } from "lucide-react";
+
+// Fit the molecule in view; on narrow (portrait) screens pull the camera back a bit
+// so tall molecules aren't clipped at the top/bottom.
+function fitView(viewer: any, container: HTMLElement | null) {
+  viewer.zoomTo();
+  if (container && container.clientWidth < 640) {
+    viewer.zoom(0.8);
+  }
+}
 
 type RenderStyle = "ball_and_stick" | "spacefill" | "stick" | "wireframe";
 
@@ -47,6 +57,9 @@ export function MolecularViewer() {
   const [autoRotate, setAutoRotate] = useState(true);
   const [renderStyle, setRenderStyle] = useState<RenderStyle>("ball_and_stick");
   const [showSurface, setShowSurface] = useState(false);
+  // Touch devices: the canvas only captures gestures after the user taps to unlock it,
+  // so swiping over the molecule scrolls the page instead of trapping it.
+  const [touchUnlocked, setTouchUnlocked] = useState(false);
   const [selectedAtom, setSelectedAtom] = useState<{
     elem: string;
     serial?: number;
@@ -111,7 +124,7 @@ export function MolecularViewer() {
         const data = await fetchMoleculeData(q);
         setMolecule(data);
       } catch (err: any) {
-        console.error("Failed to fetch molecule:", err);
+        console.warn("Failed to fetch molecule:", err?.message || err);
         setSearchError(err.message || "Molecule not found. Please verify the chemical name or formula.");
       } finally {
         setSearching(false);
@@ -280,7 +293,7 @@ export function MolecularViewer() {
         }
       }
 
-      viewer.zoomTo();
+      fitView(viewer, containerRef.current);
       viewer.render();
     }
 
@@ -337,10 +350,15 @@ export function MolecularViewer() {
 
   const handleResetCamera = () => {
     if (viewerRef.current) {
-      viewerRef.current.zoomTo();
+      fitView(viewerRef.current, containerRef.current);
       viewerRef.current.render();
     }
   };
+
+  // Re-lock touch interaction whenever a new molecule loads
+  useEffect(() => {
+    setTouchUnlocked(false);
+  }, [molecule]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -429,7 +447,7 @@ export function MolecularViewer() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Expanded 3D Canvas (occupies 3 cols on desktop) */}
         <div className="lg:col-span-3 flex flex-col">
-          <Card className="flex-1 overflow-hidden border-border/80 shadow-md flex flex-col relative min-h-[580px] lg:min-h-[640px] bg-gradient-to-b from-muted/20 via-background to-muted/30">
+          <Card className="flex-1 overflow-hidden border-border/80 shadow-md flex flex-col relative min-h-[440px] sm:min-h-[580px] lg:min-h-[640px] bg-gradient-to-b from-muted/20 via-background to-muted/30">
             {/* Header Status Bar */}
             <div className="flex flex-wrap items-center justify-between px-5 py-3 border-b border-border/60 bg-card/70 backdrop-blur-xs gap-2">
               <div className="flex items-center gap-2.5">
@@ -458,7 +476,7 @@ export function MolecularViewer() {
                   variant="outline"
                   size="sm"
                   onClick={() => setAutoRotate(!autoRotate)}
-                  className="h-8 text-xs gap-1.5 px-2.5"
+                  className="h-11 sm:h-8 text-sm sm:text-xs gap-1.5 px-3 sm:px-2.5"
                   title={autoRotate ? "Pause rotation" : "Resume auto-rotation"}
                 >
                   {autoRotate ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
@@ -470,7 +488,7 @@ export function MolecularViewer() {
                   variant="outline"
                   size="sm"
                   onClick={handleResetCamera}
-                  className="h-8 text-xs gap-1.5 px-2.5"
+                  className="h-11 sm:h-8 text-sm sm:text-xs gap-1.5 px-3 sm:px-2.5"
                   title="Reset view zoom and centering"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
@@ -478,11 +496,11 @@ export function MolecularViewer() {
                 </Button>
 
                 {/* Render Style Selector */}
-                <div className="flex rounded-md border border-input p-0.5 bg-muted/40">
+                <div className="order-last flex w-full sm:order-none sm:w-auto rounded-md border border-input p-0.5 bg-muted/40">
                   <button
                     type="button"
                     onClick={() => setRenderStyle("ball_and_stick")}
-                    className={`px-2 py-1 text-[11px] font-medium rounded-sm transition-all ${
+                    className={`flex-1 sm:flex-none min-h-10 sm:min-h-0 whitespace-nowrap px-1.5 sm:px-2 py-1 text-xs sm:text-[11px] font-medium rounded-sm transition-all ${
                       renderStyle === "ball_and_stick"
                         ? "bg-primary text-primary-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground"
@@ -493,7 +511,7 @@ export function MolecularViewer() {
                   <button
                     type="button"
                     onClick={() => setRenderStyle("spacefill")}
-                    className={`px-2 py-1 text-[11px] font-medium rounded-sm transition-all ${
+                    className={`flex-1 sm:flex-none min-h-10 sm:min-h-0 whitespace-nowrap px-1.5 sm:px-2 py-1 text-xs sm:text-[11px] font-medium rounded-sm transition-all ${
                       renderStyle === "spacefill"
                         ? "bg-primary text-primary-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground"
@@ -504,7 +522,7 @@ export function MolecularViewer() {
                   <button
                     type="button"
                     onClick={() => setRenderStyle("stick")}
-                    className={`px-2 py-1 text-[11px] font-medium rounded-sm transition-all ${
+                    className={`flex-1 sm:flex-none min-h-10 sm:min-h-0 whitespace-nowrap px-1.5 sm:px-2 py-1 text-xs sm:text-[11px] font-medium rounded-sm transition-all ${
                       renderStyle === "stick"
                         ? "bg-primary text-primary-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground"
@@ -515,7 +533,7 @@ export function MolecularViewer() {
                   <button
                     type="button"
                     onClick={() => setRenderStyle("wireframe")}
-                    className={`px-2 py-1 text-[11px] font-medium rounded-sm transition-all ${
+                    className={`flex-1 sm:flex-none min-h-10 sm:min-h-0 whitespace-nowrap px-1.5 sm:px-2 py-1 text-xs sm:text-[11px] font-medium rounded-sm transition-all ${
                       renderStyle === "wireframe"
                         ? "bg-primary text-primary-foreground shadow-xs"
                         : "text-muted-foreground hover:text-foreground"
@@ -530,7 +548,7 @@ export function MolecularViewer() {
                   variant={showSurface ? "default" : "outline"}
                   size="sm"
                   onClick={() => setShowSurface(!showSurface)}
-                  className="h-8 text-xs gap-1.5 px-2.5"
+                  className="h-11 sm:h-8 text-sm sm:text-xs gap-1.5 px-3 sm:px-2.5"
                   title="Toggle transparent electron cloud surface"
                 >
                   <Layers className="h-3.5 w-3.5" />
@@ -540,7 +558,7 @@ export function MolecularViewer() {
             </div>
 
             {/* 3D Canvas Area */}
-            <div className="relative flex-1 w-full h-full min-h-[500px]">
+            <div className="relative flex flex-1 flex-col w-full h-full sm:min-h-[500px]">
               {/* Loading Overlay */}
               {searching && (
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-xs transition-opacity duration-200">
@@ -558,9 +576,9 @@ export function MolecularViewer() {
 
               {/* Floating Top-Left Structural HUD Card */}
               {molecule && !searching && (
-                <div className="absolute top-4 left-4 z-10 p-3.5 rounded-xl bg-card/90 dark:bg-card/95 border border-border/70 backdrop-blur-md shadow-md text-xs space-y-2 max-w-xs pointer-events-auto">
-                  <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-1.5">
-                    <div className="font-mono text-base font-bold text-foreground flex items-center gap-1.5">
+                <div className="relative mx-2 mt-2 sm:m-0 sm:absolute sm:top-4 sm:left-4 z-10 px-3 py-2 sm:p-3.5 rounded-xl bg-card/90 dark:bg-card/95 border border-border/70 backdrop-blur-md shadow-md text-xs space-y-1 sm:space-y-2 sm:max-w-xs pointer-events-auto">
+                  <div className="flex items-center justify-between gap-3 sm:border-b border-border/60 sm:pb-1.5">
+                    <div className="font-mono text-sm sm:text-base font-bold text-foreground flex items-center gap-1.5">
                       <span>{formatChemicalFormula(molecule.formula)}</span>
                     </div>
                     {molecule.cid && (
@@ -577,7 +595,17 @@ export function MolecularViewer() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-muted-foreground pt-0.5">
+                  {/* Phones: one compact line so the molecule stays visible */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-semibold text-foreground sm:hidden">
+                    <span>🔵 {atomCount} atoms</span>
+                    <span>🔗 {bondCount} bonds</span>
+                    {molecule.molecularWeight && (
+                      <span className="font-mono font-medium text-muted-foreground">
+                        {molecule.molecularWeight} g/mol
+                      </span>
+                    )}
+                  </div>
+                  <div className="hidden sm:grid grid-cols-2 gap-x-3 gap-y-1 text-muted-foreground pt-0.5">
                     <div>
                       <span className="text-[10px] uppercase font-semibold text-foreground/70 block">
                         Geometry
@@ -626,7 +654,7 @@ export function MolecularViewer() {
 
               {/* Floating Bottom Atom Inspector Tooltip */}
               {selectedAtom && (
-                <div className="absolute bottom-4 left-4 z-10 px-3.5 py-2 rounded-lg bg-card/95 border border-primary/50 shadow-md backdrop-blur-md text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2">
+                <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto z-10 px-3 sm:px-3.5 py-2 rounded-lg bg-card/95 border border-primary/50 shadow-md backdrop-blur-md text-xs flex items-center gap-3 animate-in fade-in slide-in-from-bottom-2">
                   <div className="h-3 w-3 rounded-full bg-primary" />
                   <div>
                     <span className="font-bold text-foreground">
@@ -635,7 +663,7 @@ export function MolecularViewer() {
                     {selectedAtom.serial !== undefined && (
                       <span className="text-muted-foreground ml-1">#{selectedAtom.serial}</span>
                     )}
-                    <span className="text-muted-foreground ml-2 font-mono text-[11px]">
+                    <span className="block sm:inline text-muted-foreground sm:ml-2 font-mono text-[11px]">
                       (x: {selectedAtom.x}, y: {selectedAtom.y}, z: {selectedAtom.z})
                     </span>
                   </div>
@@ -650,10 +678,37 @@ export function MolecularViewer() {
               )}
 
               {/* 3Dmol WebGL Container */}
-              <div
-                ref={containerRef}
-                className="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing"
-              />
+              {/* Phones: canvas sits below the info card; desktop: fills the area behind it */}
+              <div className="relative flex-1 w-full min-h-[340px] sm:min-h-0 sm:absolute sm:inset-0">
+                <div
+                  ref={containerRef}
+                  className="w-full h-full absolute inset-0 cursor-grab active:cursor-grabbing"
+                />
+
+                {/* Touch-only scroll guard (hidden on mouse devices via pointer-coarse) */}
+                {molecule && !searching && !touchUnlocked && (
+                  <button
+                    type="button"
+                    onClick={() => setTouchUnlocked(true)}
+                    className="absolute inset-0 z-[5] hidden items-end justify-center pb-4 pointer-coarse:flex"
+                    aria-label="Tap to rotate the 3D model"
+                  >
+                    <span className="flex items-center gap-2 rounded-full bg-foreground/80 px-4 py-2.5 text-sm font-medium text-background shadow-lg">
+                      <Hand className="h-4 w-4" />
+                      Tap to rotate 3D
+                    </span>
+                  </button>
+                )}
+                {molecule && touchUnlocked && (
+                  <button
+                    type="button"
+                    onClick={() => setTouchUnlocked(false)}
+                    className="absolute top-3 right-3 z-[15] hidden min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-lg pointer-coarse:flex"
+                  >
+                    Done
+                  </button>
+                )}
+              </div>
             </div>
           </Card>
         </div>

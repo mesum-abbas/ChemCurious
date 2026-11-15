@@ -24,7 +24,7 @@ export default function AboutPage() {
 
         {/* Header Badge */}
         <div className="text-center mb-8">
-          <Badge variant="outline" className="px-4 py-1 mb-3 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-medium">
+          <Badge variant="outline" className="max-w-full whitespace-normal text-center px-4 py-1 mb-3 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 font-medium">
             Dedicated in Loving Memory • Open Interactive Learning Platform
           </Badge>
           <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground tracking-tight">

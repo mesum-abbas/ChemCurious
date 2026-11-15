@@ -2418,11 +2418,11 @@ function ElementCell({ element, isSelected, onClick }: ElementCellProps) {
     <button
       onClick={onClick}
       className={`
-        w-10 h-10 sm:w-12 sm:h-12 border rounded cursor-pointer
+        w-full aspect-square sm:aspect-auto sm:w-12 sm:h-12 border rounded-[3px] sm:rounded cursor-pointer overflow-hidden
         transition-all duration-200 transform
         ${
           isSelected
-            ? "relative z-20 ring-2 ring-emerald-600 ring-offset-1 scale-105 shadow-xl font-black"
+            ? "relative z-20 ring-2 ring-emerald-600 ring-offset-1 sm:scale-105 shadow-xl font-black"
             : "relative z-0 hover:z-10 hover:scale-103 shadow-sm"
         }
         ${categoryColor} text-white font-bold
@@ -2431,9 +2431,9 @@ function ElementCell({ element, isSelected, onClick }: ElementCellProps) {
       `}
       title={element.name}
     >
-      <div className="text-[7px] sm:text-[8px] absolute top-0.5 left-0.5 font-semibold">{element.atomicNumber}</div>
-      <div className="text-xs sm:text-sm font-black">{element.symbol}</div>
-      <div className="text-[6px] sm:text-[7px] absolute bottom-0.5 leading-tight opacity-90">{element.atomicMass}</div>
+      <div className="hidden sm:block text-[8px] absolute top-0.5 left-0.5 font-semibold">{element.atomicNumber}</div>
+      <div className="text-[9px] leading-none min-[400px]:text-[10px] sm:text-sm font-black">{element.symbol}</div>
+      <div className="hidden sm:block text-[7px] absolute bottom-0.5 leading-tight opacity-90">{element.atomicMass}</div>
     </button>
   )
 }
@@ -2505,24 +2505,27 @@ export function PeriodicTable() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
         {/* Periodic Table Grid */}
-        <div className="lg:col-span-3">
+        <div className="min-w-0 lg:col-span-3">
           <Card className="p-3">
             <CardHeader className="pb-2">
               <CardTitle className="font-serif text-lg">Periodic Table of Elements</CardTitle>
-              <CardDescription className="text-xs">Organized by periods (rows) and groups (columns)</CardDescription>
+              <CardDescription className="text-xs">
+                Organized by periods (rows) and groups (columns)
+                <span className="sm:hidden"> · Tap an element for details</span>
+              </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="pb-2">
                 {/* Main Periodic Table */}
                 <div className="w-full overflow-x-auto">
                   {/* Group Labels */}
-                  <div className="grid gap-0.5 mb-1" style={{ gridTemplateColumns: "repeat(18, minmax(35px, 1fr))" }}>
+                  <div className="grid gap-px sm:gap-0.5 mb-1 grid-cols-[repeat(18,minmax(0,1fr))] sm:grid-cols-[repeat(18,minmax(35px,1fr))]">
                     {Array.from({ length: 18 }, (_, i) => i + 1).map((group) => (
                       <div
                         key={`group-${group}`}
-                        className="text-center text-[9px] font-semibold text-muted-foreground"
+                        className="text-center text-[7px] sm:text-[9px] font-semibold text-muted-foreground"
                       >
                         {group}
                       </div>
@@ -2533,8 +2536,7 @@ export function PeriodicTable() {
                   {Array.from({ length: 7 }, (_, i) => i + 1).map((period) => (
                     <div
                       key={`period-${period}`}
-                      className="grid gap-0.5 mb-1 items-start"
-                      style={{ gridTemplateColumns: "repeat(18, minmax(35px, 1fr))" }}
+                      className="grid gap-px sm:gap-0.5 mb-px sm:mb-1 items-start grid-cols-[repeat(18,minmax(0,1fr))] sm:grid-cols-[repeat(18,minmax(35px,1fr))]"
                     >
                       {Array.from({ length: 18 }, (_, i) => i + 1).map((group) => {
                         const element = getElementByPosition(group, period)
@@ -2548,7 +2550,7 @@ export function PeriodicTable() {
                                 onClick={() => handleElementClick(element)}
                               />
                             ) : (
-                              <div className="w-full h-10 sm:h-12 rounded bg-muted/10 border border-dashed border-muted"></div>
+                              <div className="w-full aspect-square sm:aspect-auto sm:h-12 rounded-[3px] sm:rounded bg-muted/10 border border-dashed border-muted"></div>
                             )}
                           </div>
                         )
@@ -2561,8 +2563,7 @@ export function PeriodicTable() {
                     <div className="mt-2 pt-2 border-t">
                       <div className="text-[9px] font-semibold text-muted-foreground mb-1">Lanthanides</div>
                       <div
-                        className="grid gap-0.5"
-                        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(35px, 1fr))" }}
+                        className="grid gap-px sm:gap-0.5 grid-cols-[repeat(15,minmax(0,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(35px,1fr))]"
                       >
                         {lanthanides.map((element) => {
                           const isSelected = selectedElement?.atomicNumber === element.atomicNumber
@@ -2585,8 +2586,7 @@ export function PeriodicTable() {
                     <div className="mt-2 pt-2 border-t">
                       <div className="text-[9px] font-semibold text-muted-foreground mb-1">Actinides</div>
                       <div
-                        className="grid gap-0.5"
-                        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(35px, 1fr))" }}
+                        className="grid gap-px sm:gap-0.5 grid-cols-[repeat(15,minmax(0,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(35px,1fr))]"
                       >
                         {actinides.map((element) => {
                           const isSelected = selectedElement?.atomicNumber === element.atomicNumber
@@ -2610,7 +2610,7 @@ export function PeriodicTable() {
         </div>
 
         {/* Element Details Panel */}
-        <div className="lg:col-span-2 space-y-3">
+        <div className="min-w-0 lg:col-span-2 space-y-3">
           {selectedElement ? (
             <Card className="p-3">
               <CardHeader className="pb-2">
@@ -2734,20 +2734,20 @@ export function PeriodicTable() {
       </div>
 
       <Dialog open={isAtomicViewerOpen} onOpenChange={setIsAtomicViewerOpen}>
-        <DialogContent className="max-h-[85vh] max-w-6xl overflow-y-auto">
+        <DialogContent className="grid-cols-1 max-h-[90dvh] w-[calc(100%-1.5rem)] max-w-[calc(100%-1.5rem)] overflow-y-auto overflow-x-hidden p-4 sm:max-w-2xl sm:p-6 lg:max-w-3xl">
           {selectedElement && (
             <>
-              <DialogHeader className="pr-8">
-                <div className="flex items-start gap-4">
+              <DialogHeader className="min-w-0 pr-8 text-left">
+                <div className="flex items-center gap-3 sm:items-start sm:gap-4">
                   <div
-                    className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-xl font-black text-white shadow-sm ${
+                    className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl text-xl font-black text-white shadow-sm ${
                       categoryColors[selectedElement.category]?.split(" ")[0]
                     }`}
                   >
                     {selectedElement.symbol}
                   </div>
-                  <div>
-                    <DialogTitle className="font-serif text-2xl">
+                  <div className="min-w-0">
+                    <DialogTitle className="font-serif text-xl sm:text-2xl">
                       {selectedElement.name}
                     </DialogTitle>
                     <DialogDescription className="mt-1">
@@ -2756,7 +2756,7 @@ export function PeriodicTable() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="rounded-2xl border bg-gradient-to-br from-cyan-50/70 via-background to-indigo-50/70 p-3 dark:from-cyan-950/20 dark:to-indigo-950/20 sm:p-5">
+              <div className="min-w-0 rounded-2xl border bg-gradient-to-br from-cyan-50/70 via-background to-indigo-50/70 p-3 dark:from-cyan-950/20 dark:to-indigo-950/20 sm:p-5">
                 <AtomicViewer
                   elementName={selectedElement.name}
                   symbol={selectedElement.symbol}

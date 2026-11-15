@@ -22,10 +22,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAdminUsers, useUserMutations, useSystemSettings, useUpdateSettings, useAdminMe } from '@/lib/admin/hooks';
 import { demoAdapter } from '@/lib/admin/api/mock/adapter';
 import { IS_ADMIN_MOCK } from '@/lib/admin/api/client';
-import type { AdminUser, Role, AccountStatus } from '@/lib/admin/types';
+import type { AdminUser, Role, AccountStatus, UserRoleFilter } from '@/lib/admin/types';
 import {
   ShieldAlert,
   Search,
@@ -37,9 +38,15 @@ import {
   AlertTriangle,
   Users,
   Trophy,
+  Check,
+  X,
+  Clock,
 } from 'lucide-react';
 
+type UsersTab = 'all' | 'students' | 'staff' | 'pending';
+
 export default function AdminUsersPage() {
+  const [tab, setTab] = React.useState<UsersTab>('all');
   const [search, setSearch] = React.useState('');
   const [roleFilter, setRoleFilter] = React.useState<Role | 'all'>('all');
   const [statusFilter, setStatusFilter] = React.useState<AccountStatus | 'all'>('all');
@@ -88,13 +95,44 @@ export default function AdminUsersPage() {
     refetch,
   } = useAdminUsers({
     q: search || undefined,
-    role: roleFilter === 'all' ? undefined : roleFilter,
-    status: statusFilter === 'all' ? undefined : statusFilter,
+    // The tab decides the role scope; the role dropdown only applies on "All Users"
+    role: (tab === 'students'
+      ? 'student'
+      : tab === 'staff'
+        ? 'staff_admin'
+        : tab === 'all' && roleFilter !== 'all'
+          ? roleFilter
+          : undefined) as UserRoleFilter | undefined,
+    status: tab === 'pending' ? 'pending_approval' : statusFilter === 'all' ? undefined : statusFilter,
     page,
     pageSize,
   });
 
-  const { setRole, setStatus } = useUserMutations();
+  const { setRole, setStatus, approve, reject } = useUserMutations();
+
+  // Keep the last known pending count so the tab badge does not flicker while refetching
+  const [pendingCount, setPendingCount] = React.useState(0);
+  React.useEffect(() => {
+    if (typeof data?.pendingCount === 'number') setPendingCount(data.pendingCount);
+  }, [data?.pendingCount]);
+
+  const handleTabChange = (value: string) => {
+    setTab(value as UsersTab);
+    setPage(1);
+  };
+
+  const handleReject = (user: AdminUser) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: `Reject access request from ${user.name}?`,
+      description: `${user.email} requested ${user.role} access. Rejecting blocks this account from signing in. You can still approve it later from the All Users tab.`,
+      confirmText: 'Reject Request',
+      variant: 'destructive',
+      action: async () => {
+        await reject.mutateAsync(user.id);
+      },
+    });
+  };
   const { data: me } = useAdminMe();
   const { data: settingsData, isLoading: settingsLoading } = useSystemSettings();
   const updateSettings = useUpdateSettings();
@@ -282,6 +320,69 @@ export default function AdminUsersPage() {
     },
   ];
 
+  const pendingColumns: Column<AdminUser>[] = [
+    {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: (row) => (
+        <div className="space-y-0.5">
+          <div className="font-medium text-xs text-foreground">{row.name}</div>
+          <div className="text-[11px] text-muted-foreground font-mono break-all">{row.email}</div>
+        </div>
+      ),
+    },
+    {
+      header: 'Institution',
+      accessorKey: 'institution',
+      cell: (row) => <span className="text-xs text-muted-foreground">{row.institution || '—'}</span>,
+    },
+    {
+      header: 'Requested Role',
+      accessorKey: 'role',
+      cell: (row) => <RoleBadge role={row.role} />,
+    },
+    {
+      header: 'Registered',
+      accessorKey: 'createdAt',
+      cell: (row) => (
+        <span className="text-xs text-muted-foreground font-mono whitespace-nowrap">
+          {new Date(row.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+        </span>
+      ),
+    },
+    {
+      header: 'Actions',
+      className: 'text-right',
+      cell: (row) => {
+        const busy =
+          (approve.isPending && approve.variables === row.id) || (reject.isPending && reject.variables === row.id);
+        return (
+          <div className="flex items-center justify-end gap-1.5">
+            <Button
+              size="sm"
+              className="h-8 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+              disabled={busy}
+              onClick={() => approve.mutate(row.id)}
+            >
+              <Check className="h-3.5 w-3.5 mr-1" />
+              Approve
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 dark:border-rose-900"
+              disabled={busy}
+              onClick={() => handleReject(row)}
+            >
+              <X className="h-3.5 w-3.5 mr-1" />
+              Reject
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -345,6 +446,34 @@ export default function AdminUsersPage() {
         />
       )}
 
+      {/* Account scope tabs */}
+      <Tabs value={tab} onValueChange={handleTabChange}>
+        <TabsList className="h-auto w-full justify-start overflow-x-auto sm:w-auto">
+          <TabsTrigger value="all" className="text-xs">All Users</TabsTrigger>
+          <TabsTrigger value="students" className="text-xs">Students</TabsTrigger>
+          <TabsTrigger value="staff" className="text-xs">Staff / Admins</TabsTrigger>
+          <TabsTrigger value="pending" className="text-xs gap-1.5">
+            Pending Approvals
+            {pendingCount > 0 && (
+              <span className="inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">
+                {pendingCount}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {tab === 'pending' && (
+        <Alert className="bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/60">
+          <Clock className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-xs font-semibold">Staff &amp; admin access requests</AlertTitle>
+          <AlertDescription className="text-xs text-muted-foreground">
+            These people signed up asking for portal access. They cannot sign in until you approve them.
+            Approving grants the requested role immediately.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Filter and Search Bar */}
       <Card className="rounded-xl border border-border shadow-xs">
         <CardContent className="p-4">
@@ -362,7 +491,9 @@ export default function AdminUsersPage() {
               />
             </div>
 
+            {tab !== 'pending' && (
             <div className="flex items-center gap-2">
+              {tab === 'all' && (
               <Select
                 value={roleFilter}
                 onValueChange={(val) => {
@@ -380,6 +511,7 @@ export default function AdminUsersPage() {
                   <SelectItem value="student">Student</SelectItem>
                 </SelectContent>
               </Select>
+              )}
 
               <Select
                 value={statusFilter}
@@ -395,16 +527,19 @@ export default function AdminUsersPage() {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="pending_approval">Pending approval</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       {/* Data Table */}
       <DataTable
-        columns={columns}
+        columns={tab === 'pending' ? pendingColumns : columns}
         data={usersList}
         keyExtractor={(u) => u.id}
         isLoading={isLoading}
@@ -412,8 +547,14 @@ export default function AdminUsersPage() {
         pageSize={pageSize}
         total={totalUsers}
         onPageChange={setPage}
-        emptyTitle="No users found"
-        emptyDescription={search ? `No accounts matched "${search}".` : 'No accounts in the system.'}
+        emptyTitle={tab === 'pending' ? 'No pending requests' : 'No users found'}
+        emptyDescription={
+          search
+            ? `No accounts matched "${search}".`
+            : tab === 'pending'
+              ? 'New staff and admin sign-ups will appear here for approval.'
+              : 'No accounts in the system.'
+        }
       />
 
       {/* Edit Role / Status Dialog */}
@@ -472,6 +613,12 @@ export default function AdminUsersPage() {
                       ? 'Staff can author questions, reactions, and molecules, but cannot manage users.'
                       : 'Students can only view published materials and attempt quizzes.'}
                 </p>
+                {selectedRole !== editingUser.role && (
+                  <p className="text-[11px] font-medium text-primary">
+                    Takes effect the next time {editingUser.name} signs in
+                    {selectedRole !== 'student' ? ' (they will be taken to the admin portal).' : '.'}
+                  </p>
+                )}
               </div>
 
               {/* Account Status Selection */}
@@ -491,6 +638,12 @@ export default function AdminUsersPage() {
                     </SelectItem>
                     <SelectItem value="suspended" className="text-xs text-rose-600">
                       Suspended (login and access blocked)
+                    </SelectItem>
+                    <SelectItem value="pending_approval" className="text-xs">
+                      Pending approval (awaiting admin review)
+                    </SelectItem>
+                    <SelectItem value="rejected" className="text-xs">
+                      Rejected (access request declined)
                     </SelectItem>
                   </SelectContent>
                 </Select>

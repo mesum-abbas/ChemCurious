@@ -3,6 +3,10 @@ import { Op } from "sequelize";
 import { Molecule, ensureDbSynced } from "@/lib/db";
 import { parseSdf, inferGeometry } from "@/lib/pubchem";
 
+function pubchemFetch(url: string, timeoutMs = 15000) {
+  return fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+}
+
 function normalizeMoleculeName(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
@@ -92,7 +96,7 @@ export async function GET(
 
     if (!cid) {
       const nameUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(cleanName)}/cids/JSON`;
-      const nameRes = await fetch(nameUrl);
+      const nameRes = await pubchemFetch(nameUrl);
 
       if (nameRes.ok) {
         const nameJson = await nameRes.json();
@@ -101,7 +105,7 @@ export async function GET(
 
       if (!cid) {
         const formulaUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/fastformula/${encodeURIComponent(cleanName)}/cids/JSON`;
-        const formulaRes = await fetch(formulaUrl);
+        const formulaRes = await pubchemFetch(formulaUrl);
         if (formulaRes.ok) {
           const formulaJson = await formulaRes.json();
           cid = formulaJson.IdentifierList?.CID?.[0] || null;
@@ -121,12 +125,12 @@ export async function GET(
 
     // 2b. Fetch 3D conformer SDF with 2D fallback
     let recordType: "3d" | "2d" = "3d";
-    let sdfRes = await fetch(
+    let sdfRes = await pubchemFetch(
       `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=3d`
     );
 
     if (!sdfRes.ok) {
-      sdfRes = await fetch(
+      sdfRes = await pubchemFetch(
         `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=2d`
       );
       recordType = "2d";
@@ -160,7 +164,7 @@ export async function GET(
 
     try {
       const propUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/property/IUPACName,MolecularFormula,MolecularWeight/JSON`;
-      const propRes = await fetch(propUrl);
+      const propRes = await pubchemFetch(propUrl);
       if (propRes.ok) {
         const propJson = await propRes.json();
         const props = propJson.PropertyTable?.Properties?.[0] || {};

@@ -23,6 +23,7 @@ import type {
   Difficulty,
   Role,
   AccountStatus,
+  UserRoleFilter,
   LeaderboardMetric,
 } from '../types';
 
@@ -464,7 +465,7 @@ export function useQuizAnalytics(params?: {
 // --- USERS & ACCESS ---
 export function useAdminUsers(filters?: {
   q?: string;
-  role?: Role;
+  role?: UserRoleFilter;
   status?: AccountStatus;
   page?: number;
   pageSize?: number;
@@ -502,7 +503,29 @@ export function useUserMutations() {
     },
   });
 
-  return { setRole, setStatus };
+  const approve = useMutation({
+    mutationFn: (id: number) => usersApi.approveUser(id),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+      toast.success(`${data.name} approved as ${data.role}. They can sign in now.`);
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || 'Failed to approve account');
+    },
+  });
+
+  const reject = useMutation({
+    mutationFn: (id: number) => usersApi.rejectUser(id),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+      toast.success(`Access request from ${data.name} was rejected.`);
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || 'Failed to reject account');
+    },
+  });
+
+  return { setRole, setStatus, approve, reject };
 }
 
 // --- AUDIT LOGS ---

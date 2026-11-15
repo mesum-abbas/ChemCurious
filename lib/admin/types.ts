@@ -1,5 +1,5 @@
 export type Role = 'student' | 'staff' | 'admin';
-export type AccountStatus = 'active' | 'suspended';
+export type AccountStatus = 'active' | 'suspended' | 'pending_approval' | 'rejected';
 export type ContentStatus = 'draft' | 'published' | 'archived';
 export type ClassLevel = 9 | 10 | 11 | 12;
 export type Difficulty = 'easy' | 'medium' | 'hard';
@@ -173,6 +173,14 @@ export interface PubChemResult {
   molecularWeight: string | null;
   atoms: Atom[];
   bonds: Bond[];
+}
+
+/** Role filter for the users list; "staff_admin" matches staff OR admin. */
+export type UserRoleFilter = Role | 'staff_admin';
+
+export interface AdminUsersPage extends Paginated<AdminUser> {
+  /** Number of accounts awaiting approval (independent of the active filters). */
+  pendingCount?: number;
 }
 
 export interface AdminUser {

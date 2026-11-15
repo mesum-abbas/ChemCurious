@@ -12,8 +12,8 @@ export async function GET() {
     const session = token ? verifyToken(token) : null;
     if (!session?.id) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
-    const user = await User.findByPk(session.id, { attributes: ["id", "name", "email", "role"] });
-    if (!user || user.role !== "student") return NextResponse.json({ error: "User not found or not a student" }, { status: 404 });
+    const user = await User.findByPk(session.id, { attributes: ["id", "name", "email", "role", "status"] });
+    if (!user || user.role !== "student" || user.status !== "active") return NextResponse.json({ error: "User not found or not a student" }, { status: 404 });
     const attempts = await QuizAttempt.findAll({ where: { userId: Number(session.id) }, order: [["createdAt", "DESC"]], raw: true });
     const rank = await getStudentRank(Number(session.id));
     return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email }, attempts, rank });

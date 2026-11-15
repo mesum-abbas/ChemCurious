@@ -1,17 +1,27 @@
 import { adminFetch, IS_ADMIN_MOCK } from './client';
 import { demoAdapter } from './mock/adapter';
-import type { AdminUser, Role, AccountStatus, Paginated } from '../types';
+import type { AdminUser, AdminUsersPage, Role, AccountStatus, UserRoleFilter } from '../types';
 
 export const usersApi = {
   getUsers: async (params?: {
     q?: string;
-    role?: Role;
+    role?: UserRoleFilter;
     status?: AccountStatus;
     page?: number;
     pageSize?: number;
-  }): Promise<Paginated<AdminUser>> => {
+  }): Promise<AdminUsersPage> => {
     if (IS_ADMIN_MOCK) return demoAdapter.getUsers(params);
-    return adminFetch<Paginated<AdminUser>>('/api/admin/users', { query: params });
+    return adminFetch<AdminUsersPage>('/api/admin/users', { query: params });
+  },
+
+  approveUser: async (id: number): Promise<AdminUser> => {
+    if (IS_ADMIN_MOCK) return demoAdapter.setUserStatus(id, 'active');
+    return adminFetch<AdminUser>(`/api/admin/users/${id}/approve`, { method: 'PATCH' });
+  },
+
+  rejectUser: async (id: number): Promise<AdminUser> => {
+    if (IS_ADMIN_MOCK) return demoAdapter.setUserStatus(id, 'rejected');
+    return adminFetch<AdminUser>(`/api/admin/users/${id}/reject`, { method: 'PATCH' });
   },
 
   setUserRole: async (id: number, role: Role): Promise<AdminUser> => {

@@ -366,23 +366,26 @@ export default function ReactionSimulatorPage() {
       type="button"
       key={`${entry.molecule}-${index}`}
       onClick={() => setExpandedMolecule(entry)}
-      className="group flex min-w-[200px] max-w-[260px] flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border bg-muted/10 p-3 text-left shadow-xs transition-all hover:border-primary/50 hover:bg-muted/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group flex w-full max-w-[260px] min-w-0 sm:w-[230px] cursor-pointer flex-col items-center gap-2 rounded-xl border bg-muted/10 p-2 text-left shadow-xs sm:p-3 transition-all hover:border-primary/50 hover:bg-muted/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <div className="relative h-[200px] w-full">
-        <MoleculeViewer data={entry.data || null} name={entry.molecule} />
+      {/* On touch screens the small preview ignores gestures (so swiping scrolls the page);
+          tapping the card opens the full interactive view instead. */}
+      <div className="relative h-[150px] w-full sm:h-[200px] pointer-coarse:[&>*]:pointer-events-none">
+        <MoleculeViewer data={entry.data || null} name={entry.molecule} minHeightClass="min-h-0" />
         <span className="pointer-events-none absolute right-2 top-2 rounded-md bg-background/80 p-1 opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
           <Maximize2 className="h-3.5 w-3.5 text-muted-foreground" />
         </span>
       </div>
       <div
-        className={`text-center text-sm font-bold ${
+        className={`max-w-full break-words text-center text-sm font-bold ${
           accent === "emerald" ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"
         }`}
       >
         {formatSpeciesLabel(entry.coefficient, entry.molecule, entry.data?.formula)}
       </div>
-      <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
-        Click to expand 3D view
+      <span className="text-center text-[10px] font-medium uppercase tracking-wide text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 pointer-coarse:opacity-100">
+        <span className="pointer-coarse:hidden">Click</span>
+        <span className="hidden pointer-coarse:inline">Tap</span> to expand 3D view
       </span>
     </button>
   );
@@ -391,23 +394,23 @@ export default function ReactionSimulatorPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex items-center gap-2">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="mb-4 flex items-center gap-2 sm:mb-6">
           <Link href="/">
             <Button variant="ghost" size="sm">
-              <ChevronLeft className="mr-1 h-4 w-4" /> Back to Home
+              <ChevronLeft className="mr-1 h-4 w-4" /> <span className="hidden sm:inline">Back to&nbsp;</span>Home
             </Button>
           </Link>
           <span className="text-muted-foreground">|</span>
-          <div className="flex items-center gap-2 font-bold text-primary">
+          <div className="flex items-center gap-2 whitespace-nowrap font-bold text-primary">
             <FlaskConical className="h-5 w-5" />
             <span>Reaction Simulator</span>
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-4">
-          <div className="flex flex-col gap-4 lg:col-span-1">
-            <div className="rounded-xl border bg-card p-5 shadow-sm">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+          <div className="flex min-w-0 flex-col gap-4 lg:col-span-1">
+            <div className="rounded-xl border bg-card p-4 shadow-sm sm:p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-foreground">Reactions</h3>
                 <span className="text-xs font-semibold text-muted-foreground">
@@ -418,7 +421,7 @@ export default function ReactionSimulatorPage() {
               <div className="mb-3 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1 text-center text-xs font-medium">
                 <button
                   onClick={() => handleTabChange("organic")}
-                  className={`rounded-md py-1.5 transition-all ${
+                  className={`min-h-9 rounded-md px-1 py-1.5 transition-all ${
                     activeTab === "organic"
                       ? "bg-background text-primary shadow-xs font-bold"
                       : "text-muted-foreground hover:text-foreground"
@@ -428,7 +431,7 @@ export default function ReactionSimulatorPage() {
                 </button>
                 <button
                   onClick={() => handleTabChange("inorganic")}
-                  className={`rounded-md py-1.5 transition-all ${
+                  className={`min-h-9 rounded-md px-1 py-1.5 transition-all ${
                     activeTab === "inorganic"
                       ? "bg-background text-primary shadow-xs font-bold"
                       : "text-muted-foreground hover:text-foreground"
@@ -466,7 +469,7 @@ export default function ReactionSimulatorPage() {
                   No {activeTab} reactions found {searchQuery ? `matching "${searchQuery}"` : ""}.
                 </div>
               ) : (
-                <div className="flex max-h-[500px] flex-col gap-2 overflow-y-auto pr-1">
+                <div className="flex max-h-[320px] flex-col gap-2 overflow-y-auto overscroll-contain pr-1 lg:max-h-[500px]">
                   {filteredReactions.map((reaction) => (
                     <button
                       key={reaction.id}
@@ -477,7 +480,7 @@ export default function ReactionSimulatorPage() {
                           : "border-border bg-background text-foreground hover:bg-muted/50"
                       }`}
                     >
-                      <div className="truncate font-medium leading-snug">
+                      <div className="break-words font-medium leading-snug lg:truncate">
                         {formatChemicalFormula(sidebarEquation(reaction))}
                       </div>
                       {reaction.category && (
@@ -498,12 +501,12 @@ export default function ReactionSimulatorPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 lg:col-span-3">
+          <div className="flex min-w-0 flex-col gap-6 lg:col-span-3">
             {selectedReaction ? (
               <>
-                <Card className="border p-6 shadow-sm">
+                <Card className="border p-4 shadow-sm sm:p-6">
                   <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
-                    <p className="min-w-0 flex-1 font-serif text-xl font-bold leading-relaxed text-foreground sm:text-2xl">
+                    <p className="min-w-0 basis-full break-words font-serif text-lg font-bold leading-snug text-foreground sm:basis-0 sm:flex-1 sm:text-2xl sm:leading-relaxed">
                       {formatChemicalFormula(overviewEquation)}
                     </p>
                     {selectedReaction.category && (
@@ -517,7 +520,7 @@ export default function ReactionSimulatorPage() {
                   )}
                 </Card>
 
-                <Card className="flex min-h-[500px] flex-col justify-between border p-6 shadow-sm">
+                <Card className="flex flex-col justify-between border p-4 shadow-sm sm:min-h-[500px] sm:p-6">
                   {isReacting ? (
                     <div className="flex flex-1 flex-col items-center justify-center gap-4 py-16">
                       <div className="relative flex items-center justify-center">
@@ -529,51 +532,51 @@ export default function ReactionSimulatorPage() {
                       </span>
                     </div>
                   ) : !hasReacted ? (
-                    <div className="flex flex-1 flex-col justify-between gap-6">
+                    <div className="flex flex-1 flex-col justify-between gap-4 sm:gap-6">
                       <div className="text-center">
                         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                           Reactants Stage
                         </span>
-                        <h4 className="mt-1 text-base font-bold text-foreground">
+                        <h4 className="mt-1 text-sm font-bold text-foreground sm:text-base">
                           Review each reactant before starting synthesis.
                         </h4>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-center gap-6 py-4">
+                      <div className="grid grid-cols-2 justify-items-center gap-3 py-2 [&>*:only-child]:col-span-2 sm:flex sm:flex-wrap sm:items-stretch sm:justify-center sm:gap-6 sm:py-4">
                         {selectedReaction.reactants.map((reactant, index) =>
                           renderMoleculeCard(reactant, index, "primary")
                         )}
                       </div>
 
-                      <div className="flex justify-center border-t pt-6">
-                        <Button onClick={handleSimulate} size="lg" className="px-8 shadow-md">
+                      <div className="flex justify-center border-t pt-4 sm:pt-6">
+                        <Button onClick={handleSimulate} size="lg" className="w-full px-8 shadow-md sm:w-auto">
                           <Play className="mr-2 h-4 w-4 fill-current" /> Simulate Reaction
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-1 flex-col justify-between gap-6">
+                    <div className="flex flex-1 flex-col justify-between gap-4 sm:gap-6">
                       <div className="text-center">
                         <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
                           Products Formed
                         </span>
-                        <h4 className="mt-1 text-base font-bold text-foreground">
+                        <h4 className="mt-1 text-sm font-bold text-foreground sm:text-base">
                           Synthesized product molecules in 3D geometry.
                         </h4>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-center gap-6 py-4">
+                      <div className="grid grid-cols-2 justify-items-center gap-3 py-2 [&>*:only-child]:col-span-2 sm:flex sm:flex-wrap sm:items-stretch sm:justify-center sm:gap-6 sm:py-4">
                         {stageMolecules?.map((molecule, index) =>
                           renderMoleculeCard(molecule, index, "emerald")
                         )}
                       </div>
 
-                      <div className="flex justify-center gap-4 border-t pt-6">
+                      <div className="flex justify-center gap-4 border-t pt-4 sm:pt-6">
                         <Button
                           onClick={handleReset}
                           variant="outline"
                           size="lg"
-                          className="px-8"
+                          className="w-full px-8 sm:w-auto"
                         >
                           <RotateCcw className="mr-2 h-4 w-4" /> Reset Reaction
                         </Button>
@@ -587,7 +590,12 @@ export default function ReactionSimulatorPage() {
                   <div>
                     <h5 className="mb-1 font-bold">Interactive Lab Guide</h5>
                     <p className="text-xs leading-relaxed text-blue-700/90">
-                      Drag to rotate each molecule in 3D space, scroll to zoom, and click simulate to view the transformation from reactants to products.
+                      <span className="pointer-coarse:hidden">
+                        Drag to rotate each molecule in 3D space, scroll to zoom, and click simulate to view the transformation from reactants to products.
+                      </span>
+                      <span className="hidden pointer-coarse:inline">
+                        Tap any molecule to open it in 3D, then drag to rotate and pinch to zoom. Tap Simulate to see reactants turn into products.
+                      </span>
                     </p>
                   </div>
                 </div>

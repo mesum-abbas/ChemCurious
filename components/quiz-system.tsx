@@ -69,22 +69,30 @@ function QuestionCard({
           onValueChange={(val) => onAnswerSelect(Number(val))}
           disabled={!!result}
         >
-          {question.options.map((option, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+          {question.options.map((option, index) => {
+            const isSelected = index === selectedAnswer
+            const stateClass =
+              result && index === result.correctAnswer
+                ? "border-green-400 bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
+                : result && isSelected
+                  ? "border-red-400 bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200"
+                  : isSelected
+                    ? "border-primary bg-primary/10 ring-1 ring-primary"
+                    : "border-border hover:border-primary/50 hover:bg-muted/40"
+
+            return (
               <Label
+                key={index}
                 htmlFor={`option-${index}`}
-                className={`flex-1 cursor-pointer p-2 rounded transition-colors ${
-                  result && index === result.correctAnswer
-                    ? "bg-green-100 text-green-800 border border-green-300 dark:bg-green-950 dark:text-green-200"
-                    : result && index === selectedAnswer && index !== result.correctAnswer
-                      ? "bg-red-100 text-red-800 border border-red-300 dark:bg-red-950 dark:text-red-200"
-                      : ""
-                }`}
-                dangerouslySetInnerHTML={{ __html: option }}
-              />
-            </div>
-          ))}
+                className={`flex min-h-[52px] w-full items-center gap-3 rounded-lg border-2 px-4 py-3 text-base font-normal leading-snug transition-colors ${
+                  result ? "cursor-default" : "cursor-pointer"
+                } ${stateClass}`}
+              >
+                <RadioGroupItem value={index.toString()} id={`option-${index}`} className="shrink-0" />
+                <span className="flex-1" dangerouslySetInnerHTML={{ __html: option }} />
+              </Label>
+            )
+          })}
         </RadioGroup>
 
         {result && (
@@ -293,8 +301,9 @@ function QuizViewer({ chapter, onBack }: { chapter: Chapter; onBack: () => void 
         result={currentResult}
       />
 
-      <div className="flex justify-end">
-        <div className="flex gap-2">
+      {/* Sticky on phones so the action is always under the thumb */}
+      <div className="sticky bottom-0 z-20 -mx-4 flex justify-end border-t bg-background/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
+        <div className="flex w-full gap-2 sm:w-auto [&>button]:h-12 [&>button]:flex-1 sm:[&>button]:h-9 sm:[&>button]:flex-none">
           {!currentResult && (
             <Button
               onClick={handleCheckAnswer}
@@ -367,11 +376,12 @@ export function QuizSystem({ initialChapterId }: { initialChapterId?: number } =
       </div>
 
       <Tabs defaultValue="9" value={selectedClass} onValueChange={setSelectedClass}>
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 h-auto w-full max-w-md">
-          <TabsTrigger value="9">Class 9</TabsTrigger>
-          <TabsTrigger value="10">Class 10</TabsTrigger>
-          <TabsTrigger value="11">Class 11</TabsTrigger>
-          <TabsTrigger value="12">Class 12</TabsTrigger>
+        <TabsList className="grid grid-cols-4 h-auto w-full max-w-md">
+          {["9", "10", "11", "12"].map((cls) => (
+            <TabsTrigger key={cls} value={cls} className="min-h-10 px-1 text-sm">
+              Class {cls}
+            </TabsTrigger>
+          ))}
         </TabsList>
       </Tabs>
 

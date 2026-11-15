@@ -25,7 +25,7 @@ export async function getAdminAccess(): Promise<AdminAccessResult> {
     };
   }
 
-  if (user.status === 'suspended') {
+  if (user.status !== 'active') {
     return {
       hasAccess: false,
       role: user.role,

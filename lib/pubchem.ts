@@ -157,6 +157,25 @@ export function parseSdf(sdf: string): {
   return { numAtoms, numBonds, atoms, bonds };
 }
 
+const NETWORK_ERROR_MESSAGE =
+  "Could not reach the molecular database. Please check your internet connection and try again.";
+
+/**
+ * fetch() with a timeout. Network failures and timeouts are converted into a
+ * friendly Error instead of a raw "TypeError: Failed to fetch".
+ */
+async function safeFetch(url: string, timeoutMs = 15000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } catch {
+    throw new Error(NETWORK_ERROR_MESSAGE);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * Direct browser fallback fetcher for PubChem REST API in case internal Next.js API route is unavailable
  */
@@ -169,7 +188,7 @@ export async function fetchDirectFromPubChem(query: string): Promise<MoleculeDat
   // Step 1: Resolve Name to CID (with formula fallback)
   let cid: number | null = null;
   const nameUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(trimmed)}/cids/JSON`;
-  const nameRes = await fetch(nameUrl);
+  const nameRes = await safeFetch(nameUrl);
 
   if (nameRes.ok) {
     const json = await nameRes.json();
@@ -178,7 +197,7 @@ export async function fetchDirectFromPubChem(query: string): Promise<MoleculeDat
 
   if (!cid) {
     const formulaUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/fastformula/${encodeURIComponent(trimmed)}/cids/JSON`;
-    const formulaRes = await fetch(formulaUrl);
+    const formulaRes = await safeFetch(formulaUrl);
     if (formulaRes.ok) {
       const json = await formulaRes.json();
       cid = json.IdentifierList?.CID?.[0] || null;
@@ -191,10 +210,10 @@ export async function fetchDirectFromPubChem(query: string): Promise<MoleculeDat
 
   // Step 2: Fetch 3D conformer SDF, fall back to 2D
   let recordType: "3d" | "2d" = "3d";
-  let sdfRes = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=3d`);
+  let sdfRes = await safeFetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=3d`);
 
   if (!sdfRes.ok) {
-    sdfRes = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=2d`);
+    sdfRes = await safeFetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/record/SDF?record_type=2d`);
     recordType = "2d";
   }
 
@@ -214,7 +233,7 @@ export async function fetchDirectFromPubChem(query: string): Promise<MoleculeDat
 
   try {
     const propUrl = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/property/IUPACName,MolecularFormula,MolecularWeight/JSON`;
-    const propRes = await fetch(propUrl);
+    const propRes = await safeFetch(propUrl);
     if (propRes.ok) {
       const propJson = await propRes.json();
       const props = propJson.PropertyTable?.Properties?.[0] || {};
@@ -255,8 +274,8 @@ export async function fetchMoleculeData(searchQuery: string): Promise<MoleculeDa
   }
 
   try {
-    const res = await fetch(`/api/molecules/${encodeURIComponent(trimmed)}`);
-    const data = await res.json();
+    const res = await safeFetch(`/api/molecules/${encodeURIComponent(trimmed)}`, 30000);
+    const data = await res.json().catch(() => null);
 
     if (res.ok && data && (data.sdf || data.atoms?.length)) {
       const geo = inferGeometry(data.formula || data.name || trimmed, data.atoms?.length, data.recordType);

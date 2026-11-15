@@ -25,8 +25,15 @@ export async function POST(request: Request) {
 
     await user.update({ resetToken, resetTokenExpiry });
 
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${resetToken}`;
-    console.log(`[DEV] Password reset link for ${normalizedEmail}: ${resetLink}`);
+    // Use the configured public URL, or the origin this request arrived on (works on any Vercel domain)
+    const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
+    const resetLink = `${origin.replace(/\/$/, "")}/reset-password?token=${resetToken}`;
+
+    // TODO: send `resetLink` by email (no email provider is configured yet).
+    // Never log the link in production: anyone with log access could reset this account.
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[DEV] Password reset link for ${normalizedEmail}: ${resetLink}`);
+    }
 
     return NextResponse.json({ message: "If that email exists, a reset link has been sent." });
   } catch (error) {

@@ -36,7 +36,9 @@ export async function getCurrentUser(): Promise<GetCurrentUserResult> {
       return { user: null, error: "user_not_found" };
     }
 
-    if (dbUser.status === "suspended") {
+    // Any non-active account (suspended, pending_approval, rejected) is blocked,
+    // even if it still holds a session cookie issued earlier.
+    if (dbUser.status !== "active") {
       return {
         user: {
           id: dbUser.id,
@@ -44,7 +46,7 @@ export async function getCurrentUser(): Promise<GetCurrentUserResult> {
           email: dbUser.email,
           institution: dbUser.institution,
           role: dbUser.role as Role,
-          status: "suspended",
+          status: dbUser.status as AccountStatus,
         },
         error: "suspended",
       };

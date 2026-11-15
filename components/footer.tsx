@@ -34,7 +34,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/periodic-table" className="hover:text-primary transition-colors">
+                <Link href="/periodic" className="hover:text-primary transition-colors">
                   Interactive Periodic Table
                 </Link>
               </li>
@@ -61,7 +61,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/periodic-table" className="hover:text-primary transition-colors">
+                <Link href="/periodic" className="hover:text-primary transition-colors">
                   Periodic Trends & Orbitals
                 </Link>
               </li>
@@ -117,7 +117,7 @@ export function Footer() {
               3D Library
             </Link>
             <span>•</span>
-            <Link href="/periodic-table" className="hover:underline">
+            <Link href="/periodic" className="hover:underline">
               Periodic Elements
             </Link>
           </div>

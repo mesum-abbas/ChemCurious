@@ -33,7 +33,7 @@ const sequelize = new Sequelize(
 );
 
 export type Role = "student" | "staff" | "admin";
-export type AccountStatus = "active" | "suspended";
+export type AccountStatus = "active" | "suspended" | "pending_approval" | "rejected";
 export type ContentStatus = "draft" | "published" | "archived";
 
 // ==========================================
@@ -255,7 +255,7 @@ if (!sequelize.models.User) {
         defaultValue: "student",
       },
       status: {
-        type: DataTypes.ENUM("active", "suspended"),
+        type: DataTypes.ENUM("active", "suspended", "pending_approval", "rejected"),
         allowNull: false,
         defaultValue: "active",
       },
@@ -946,6 +946,18 @@ export async function ensureDbSynced(): Promise<void> {
                 ADD COLUMN \`last_login_at\` DATETIME NULL AFTER \`status\`;
             `);
             console.log("Users table updated with role & status successfully.");
+          }
+
+          // Widen users.status enum for the admin-approval pipeline (idempotent, no data loss:
+          // existing 'active'/'suspended' values are kept; only runs when the new values are missing).
+          const [statusCols]: any = await sequelize.query("SHOW COLUMNS FROM `users` LIKE 'status'");
+          const statusType = String(statusCols?.[0]?.Type ?? statusCols?.[0]?.type ?? "");
+          if (statusType && !statusType.includes("pending_approval")) {
+            console.log("Migrating users.status enum to include pending_approval/rejected...");
+            await sequelize.query(`
+              ALTER TABLE \`users\`
+                MODIFY COLUMN \`status\` ENUM('active','suspended','pending_approval','rejected') NOT NULL DEFAULT 'active';
+            `);
           }
 
           // Ensure default admin users exist and are active

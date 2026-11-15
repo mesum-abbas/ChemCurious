@@ -1261,15 +1261,17 @@ export const demoAdapter = {
     return s;
   },
   async getUsers(filters?: {
-    role?: Role;
+    role?: Role | 'staff_admin';
     status?: string;
     q?: string;
     page?: number;
     pageSize?: number;
-  }): Promise<Paginated<AdminUser>> {
+  }): Promise<Paginated<AdminUser> & { pendingCount: number }> {
     let list = [...users];
 
-    if (filters?.role) {
+    if (filters?.role === 'staff_admin') {
+      list = list.filter((u) => u.role === 'staff' || u.role === 'admin');
+    } else if (filters?.role) {
       list = list.filter((u) => u.role === filters.role);
     }
     if (filters?.status) {
@@ -1285,7 +1287,8 @@ export const demoAdapter = {
       );
     }
 
-    return delay(paginate(list, filters?.page, filters?.pageSize));
+    const pendingCount = users.filter((u) => u.status === 'pending_approval').length;
+    return delay({ ...paginate(list, filters?.page, filters?.pageSize), pendingCount });
   },
 
   async setUserRole(id: number, role: Role): Promise<AdminUser> {

@@ -32,7 +32,7 @@ export async function GET() {
     const userCreatedAt = dbUser.get("createdAt");
 
     // Strict Role Policy: Only student accounts are valid for the Student Website
-    if (dbUser.role !== "student") {
+    if (dbUser.role !== "student" || dbUser.status !== "active") {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 

@@ -189,11 +189,12 @@ export function AdminShell({
       <div className="p-4 border-t border-sidebar-border space-y-2 bg-sidebar">
         <Link
           href="/"
+          title="Open the public learning pages (3D molecules, periodic table, reactions)"
           className="flex items-center justify-between rounded-lg border border-sidebar-border px-3 py-2 text-xs font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group"
         >
           <span className="flex items-center gap-2">
             <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary" />
-            Back to Student Site
+            View Public Site
           </span>
           <ChevronRight className="h-3 w-3 text-muted-foreground" />
         </Link>
@@ -334,9 +335,9 @@ export function AdminShell({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/" className="cursor-pointer">
+                  <Link href="/" className="cursor-pointer" title="Open the public learning pages (3D molecules, periodic table, reactions)">
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    <span>Student Website</span>
+                    <span>View Public Site</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

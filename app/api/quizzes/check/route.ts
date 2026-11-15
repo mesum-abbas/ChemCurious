@@ -15,8 +15,8 @@ export async function POST(req: Request) {
     const session = token ? verifyToken(token) : null;
     if (!session?.id) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
-    const user = await User.findByPk(session.id, { attributes: ["id", "role"] });
-    if (!user || user.role !== "student") {
+    const user = await User.findByPk(session.id, { attributes: ["id", "role", "status"] });
+    if (!user || user.role !== "student" || user.status !== "active") {
       return NextResponse.json({ error: "Only students may check answers" }, { status: 403 });
     }
 

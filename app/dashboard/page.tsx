@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { Award, BookOpen, CalendarDays, Loader2, Mail, TrendingUp, Trophy } from "lucide-react"
+import { Award, BookOpen, CalendarDays, Loader2, Mail, RotateCcw, TrendingUp, Trophy } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { useAuth } from "@/contexts/auth-context"
 import { Badge } from "@/components/ui/badge"
@@ -33,6 +33,35 @@ function percentageClass(value: number) {
   if (value >= 70) return "border-green-200 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-200"
   if (value >= 50) return "border-yellow-200 bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-200"
   return "border-red-200 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200"
+}
+
+function percentageBarClass(value: number) {
+  if (value >= 70) return "bg-green-500"
+  if (value >= 50) return "bg-yellow-500"
+  return "bg-red-500"
+}
+
+function formatDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "—"
+  return date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+}
+
+const SMALL_WORDS = new Set(["of", "and", "the", "in", "on", "a", "an", "to", "for", "or"])
+
+// Chapter names are entered by admins and some are ALL CAPS; show those in title case.
+function displayChapterName(name: string) {
+  if (!name) return name
+  if (name !== name.toUpperCase() || !/[A-Z]/.test(name)) return name.charAt(0).toUpperCase() + name.slice(1)
+  return name
+    .toLowerCase()
+    .split(" ")
+    .map((word, i) => {
+      if (/^[ivx]+:?$/.test(word)) return word.toUpperCase() // roman numerals: "I", "II:"
+      if (i > 0 && SMALL_WORDS.has(word)) return word
+      return word.replace(/^(\(?)(\p{L})/u, (_, paren, ch) => paren + ch.toUpperCase())
+    })
+    .join(" ")
 }
 
 export default function DashboardPage() {
@@ -81,9 +110,9 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <p className="mb-5 text-sm text-muted-foreground">Sign in to view your quiz history and performance.</p>
-              <Link href="/auth">
-                <Button>Sign In</Button>
-              </Link>
+              <Button asChild className="h-11 w-full sm:w-auto">
+                <Link href="/auth">Sign In</Link>
+              </Button>
             </CardContent>
           </Card>
         </main>
@@ -105,10 +134,10 @@ export default function DashboardPage() {
   return (
     <>
       <Navigation />
-      <main className="container mx-auto space-y-8 px-4 py-8">
+      <main className="container mx-auto space-y-6 px-4 py-6 sm:space-y-8 sm:py-8">
         <header>
           <p className="text-sm font-medium text-primary">Welcome back, {user.name}</p>
-          <h1 className="font-serif text-3xl font-bold">Student Dashboard</h1>
+          <h1 className="font-serif text-2xl font-bold sm:text-3xl">Student Dashboard</h1>
           <p className="mt-1 text-muted-foreground">
             Review your chemistry quiz performance and keep building momentum.
           </p>
@@ -126,7 +155,7 @@ export default function DashboardPage() {
             <CardContent className="space-y-4">
               <div>
                 <p className="text-lg font-semibold">{user.name}</p>
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <p className="flex min-w-0 items-center gap-2 break-all text-sm text-muted-foreground">
                   <Mail className="h-4 w-4" />
                   {user.email}
                 </p>
@@ -175,15 +204,15 @@ export default function DashboardPage() {
           </Card>
 
           {/* Metric Cards Grid */}
-          <div className={`grid gap-4 sm:gap-6 ${showRank ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3"}`}>
+          <div className={`grid grid-cols-2 gap-3 sm:gap-6 ${showRank ? "lg:grid-cols-4" : "sm:grid-cols-3"}`}>
             {showRank && (
               <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent shadow-xs">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Overall Rank</CardTitle>
+                  <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">Overall Rank</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Trophy className="mb-3 h-5 w-5 text-amber-500" />
-                  <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">
+                  <p className="text-2xl font-bold sm:text-3xl text-amber-600 dark:text-amber-400">
                     {rank?.currentRank !== null ? `#${rank?.currentRank}` : "—"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -197,31 +226,33 @@ export default function DashboardPage() {
 
             <Card className="shadow-xs">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Quizzes Attempted</CardTitle>
+                <CardTitle className="text-xs font-medium sm:text-sm">Total Quizzes Attempted</CardTitle>
               </CardHeader>
               <CardContent>
                 <BookOpen className="mb-3 h-5 w-5 text-primary" />
-                <p className="text-3xl font-bold">{attempts.length}</p>
+                <p className="text-2xl font-bold sm:text-3xl">{attempts.length}</p>
               </CardContent>
             </Card>
 
             <Card className="shadow-xs">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Average Percentage Score</CardTitle>
+                <CardTitle className="text-xs font-medium sm:text-sm">Average Percentage Score</CardTitle>
               </CardHeader>
               <CardContent>
                 <TrendingUp className="mb-3 h-5 w-5 text-emerald-600" />
-                <p className="text-3xl font-bold">{average}%</p>
+                <p className="text-2xl font-bold sm:text-3xl">{average}%</p>
               </CardContent>
             </Card>
 
-            <Card className="shadow-xs">
+            <Card className={`shadow-xs ${showRank ? "" : "col-span-2 sm:col-span-1"}`}>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Highest Scoring Chapter</CardTitle>
+                <CardTitle className="text-xs font-medium sm:text-sm">Highest Scoring Chapter</CardTitle>
               </CardHeader>
               <CardContent>
                 <Award className="mb-3 h-5 w-5 text-amber-600" />
-                <p className="truncate font-semibold">{highest?.chapterName || "No attempts yet"}</p>
+                <p className="line-clamp-2 break-words font-semibold leading-snug">
+                  {highest ? displayChapterName(highest.chapterName) : "No attempts yet"}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   {highest ? `${Math.round(Number(highest.percentage))}%` : "Start a quiz"}
                 </p>
@@ -241,55 +272,112 @@ export default function DashboardPage() {
             ) : attempts.length === 0 ? (
               <div className="py-10 text-center">
                 <p className="text-muted-foreground">No completed quizzes yet.</p>
-                <Link href="/quizzes">
-                  <Button className="mt-4">Take Your First Quiz</Button>
-                </Link>
+                <Button asChild className="mt-4 h-11">
+                  <Link href="/quizzes">Take Your First Quiz</Link>
+                </Button>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="border-b text-muted-foreground">
-                    <tr>
-                      <th className="pb-3 pr-4 font-medium">Chapter Name</th>
-                      <th className="pb-3 pr-4 font-medium">Score</th>
-                      <th className="pb-3 pr-4 font-medium">Percentage</th>
-                      <th className="pb-3 pr-4 font-medium">Date Completed</th>
-                      <th className="pb-3 text-right font-medium">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attempts.map((attempt) => {
-                      const percentage = Number(attempt.percentage)
-                      return (
-                        <tr key={attempt.id} className="border-b last:border-0">
-                          <td className="py-4 pr-4 font-medium">{attempt.chapterName}</td>
-                          <td className="py-4 pr-4">
-                            {attempt.score} / {attempt.totalQuestions}
-                          </td>
-                          <td className="py-4 pr-4">
-                            <Badge variant="outline" className={percentageClass(percentage)}>
-                              {Math.round(percentage)}%
-                            </Badge>
-                          </td>
-                          <td className="py-4 pr-4 text-muted-foreground">
-                            <span className="inline-flex items-center gap-1.5">
-                              <CalendarDays className="h-4 w-4" />
-                              {new Date(attempt.createdAt).toLocaleDateString()}
-                            </span>
-                          </td>
-                          <td className="py-4 text-right">
-                            <Link href={`/quizzes/${attempt.quizId}`}>
-                              <Button variant="outline" size="sm">
-                                Retake Quiz
+              <>
+                {/* Phones: one card per attempt */}
+                <ul className="space-y-3 md:hidden">
+                  {attempts.map((attempt) => {
+                    const percentage = Math.round(Number(attempt.percentage))
+                    return (
+                      <li key={attempt.id} className="rounded-xl border bg-card p-4 shadow-xs">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="min-w-0 break-words font-semibold leading-snug">
+                            {displayChapterName(attempt.chapterName)}
+                          </p>
+                          <Badge variant="outline" className={`shrink-0 text-sm ${percentageClass(percentage)}`}>
+                            {percentage}%
+                          </Badge>
+                        </div>
+                        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                          <div
+                            className={`h-full rounded-full ${percentageBarClass(percentage)}`}
+                            style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
+                          />
+                        </div>
+                        <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                          <span>
+                            <span className="font-semibold text-foreground">
+                              {attempt.score}/{attempt.totalQuestions}
+                            </span>{" "}
+                            correct
+                          </span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <CalendarDays className="h-4 w-4" />
+                            {formatDate(attempt.createdAt)}
+                          </span>
+                        </div>
+                        <Button asChild variant="outline" className="mt-4 h-11 w-full gap-2">
+                          <Link href={`/quizzes/${attempt.quizId}`}>
+                            <RotateCcw className="h-4 w-4" />
+                            Retake Quiz
+                          </Link>
+                        </Button>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {/* Tablet & desktop: table */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="w-full text-left text-sm">
+                    <thead className="border-b text-muted-foreground">
+                      <tr>
+                        <th className="pb-3 pr-4 font-medium">Chapter</th>
+                        <th className="whitespace-nowrap pb-3 pr-4 font-medium">Score</th>
+                        <th className="whitespace-nowrap pb-3 pr-4 font-medium">Result</th>
+                        <th className="whitespace-nowrap pb-3 pr-4 font-medium">Completed</th>
+                        <th className="pb-3 text-right font-medium">
+                          <span className="sr-only">Action</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {attempts.map((attempt) => {
+                        const percentage = Math.round(Number(attempt.percentage))
+                        return (
+                          <tr key={attempt.id} className="border-b transition-colors last:border-0 hover:bg-muted/40">
+                            <td className="py-3.5 pr-4 font-medium">{displayChapterName(attempt.chapterName)}</td>
+                            <td className="whitespace-nowrap py-3.5 pr-4 tabular-nums">
+                              {attempt.score} / {attempt.totalQuestions}
+                            </td>
+                            <td className="py-3.5 pr-4">
+                              <div className="flex items-center gap-3">
+                                <Badge variant="outline" className={`w-14 justify-center tabular-nums ${percentageClass(percentage)}`}>
+                                  {percentage}%
+                                </Badge>
+                                <div className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-muted lg:block">
+                                  <div
+                                    className={`h-full rounded-full ${percentageBarClass(percentage)}`}
+                                    style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
+                                  />
+                                </div>
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap py-3.5 pr-4 text-muted-foreground">
+                              <span className="inline-flex items-center gap-1.5">
+                                <CalendarDays className="h-4 w-4" />
+                                {formatDate(attempt.createdAt)}
+                              </span>
+                            </td>
+                            <td className="py-3.5 text-right">
+                              <Button asChild variant="outline" size="sm" className="gap-1.5">
+                                <Link href={`/quizzes/${attempt.quizId}`}>
+                                  <RotateCcw className="h-3.5 w-3.5" />
+                                  Retake
+                                </Link>
                               </Button>
-                            </Link>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

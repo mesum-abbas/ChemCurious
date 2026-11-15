@@ -7,7 +7,7 @@ import { validateBody } from "@/lib/api-utils";
 import { Op } from "sequelize";
 
 const statusSchema = z.object({
-  status: z.enum(["active", "suspended"]),
+  status: z.enum(["active", "suspended", "pending_approval", "rejected"]),
 });
 
 async function handlePatch(
@@ -35,18 +35,18 @@ async function handlePatch(
   if (!data) return NextResponse.json({ error: "Invalid data" }, { status: 400 });
 
   // If suspending an admin, ensure at least one other active admin remains
-  if (target.role === "admin" && data.status === "suspended") {
+  if (target.role === "admin" && target.status === "active" && data.status !== "active") {
     const adminCount = await User.count({
       where: {
         role: "admin",
-        status: { [Op.ne]: "suspended" } as any,
+        status: "active",
         id: { [Op.ne]: target.id },
       },
       transaction: tx,
     });
     if (adminCount === 0) {
       return NextResponse.json(
-        { error: "Cannot suspend user: System requires at least one active administrator." },
+        { error: "Cannot deactivate user: System requires at least one active administrator." },
         { status: 422 }
       );
     }
@@ -73,7 +73,7 @@ async function handlePatch(
     email: target.email,
     institution: target.institution,
     role: target.role,
-    status: target.status,
+    status: data.status,
     createdAt: safeIsoDate(target.createdAt, new Date().toISOString())!,
     lastLoginAt: safeIsoDate(target.lastLoginAt, null),
     attemptCount,

@@ -17,7 +17,7 @@ export default function PeriodicTablePage() {
           </p>
         </div>
 
-        <div className="mb-8 grid gap-4 md:grid-cols-4">
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 dark:border-blue-800 dark:from-blue-950 dark:to-blue-900">
             <CardHeader className="pb-3">
               <div className="flex items-center space-x-2">
@@ -73,7 +73,7 @@ export default function PeriodicTablePage() {
             <CardDescription>Understanding the color-coded groups in the periodic table</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
               <div className="flex items-center space-x-2">
                 <div className="h-4 w-4 rounded bg-red-500"></div>
                 <span className="text-sm">Alkali Metals</span>

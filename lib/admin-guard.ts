@@ -41,9 +41,14 @@ export function withAdmin<TContext = any>(
         );
       }
 
-      if (user.status === "suspended") {
+      if (user.status !== "active") {
         return NextResponse.json(
-          { error: "Forbidden: Account is suspended" },
+          {
+            error:
+              user.status === "suspended"
+                ? "Forbidden: Account is suspended"
+                : "Forbidden: Account is not active (pending approval or declined)",
+          },
           { status: 403 }
         );
       }

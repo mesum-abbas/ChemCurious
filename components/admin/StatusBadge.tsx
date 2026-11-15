@@ -6,7 +6,7 @@ export function StatusBadge({
   status,
   className,
 }: {
-  status: ContentStatus | 'active' | 'suspended';
+  status: ContentStatus | AccountStatus;
   className?: string;
 }) {
   switch (status) {
@@ -33,6 +33,30 @@ export function StatusBadge({
           )}
         >
           {status}
+        </Badge>
+      );
+    case 'pending_approval':
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            'bg-amber-500/10 text-amber-700 border-amber-500/40 dark:bg-amber-500/20 dark:text-amber-300 whitespace-nowrap',
+            className
+          )}
+        >
+          Pending approval
+        </Badge>
+      );
+    case 'rejected':
+      return (
+        <Badge
+          variant="outline"
+          className={cn(
+            'bg-muted text-muted-foreground border-border capitalize',
+            className
+          )}
+        >
+          Rejected
         </Badge>
       );
     case 'archived':

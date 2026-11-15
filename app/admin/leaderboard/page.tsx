@@ -236,8 +236,10 @@ export default function AdminLeaderboardPage() {
         <Tabs
           value={metric}
           onValueChange={(val) => setMetric(val as LeaderboardMetric)}
+          className="min-w-0 max-w-full"
         >
-          <TabsList className="bg-muted p-1">
+          {/* Scrolls sideways inside itself on very narrow phones instead of widening the page */}
+          <TabsList className="max-w-full justify-start overflow-x-auto bg-muted p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsTrigger value="points" className="text-xs sm:text-sm font-medium gap-1.5">
               <Trophy className="h-3.5 w-3.5 text-amber-500" /> Mastery Points
             </TabsTrigger>
