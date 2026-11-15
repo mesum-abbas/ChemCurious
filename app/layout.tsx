@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
 import { PwaRegister } from "@/components/pwa-register"
+import { ChemBot } from "@/components/chatbot/chem-bot"
 
 export const metadata: Metadata = {
   title: "ChemCurious — Interactive 3D Chemistry Platform",
@@ -44,6 +45,7 @@ export default function RootLayout({
         <AuthProvider>
           <PwaRegister />
           {children}
+          <ChemBot />
         </AuthProvider>
       </body>
     </html>
