@@ -36,7 +36,7 @@ export function EquationPreview({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card p-5 text-center shadow-xs',
+        'rounded-2xl border border-border bg-card p-5 text-center shadow-sm',
         className
       )}
       aria-live="polite"

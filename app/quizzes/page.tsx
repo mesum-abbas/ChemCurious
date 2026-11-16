@@ -1,31 +1,27 @@
-"use client"
-
-import Link from "next/link"
 import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
+import { PageHeader } from "@/components/page-header"
 import { QuizSystem } from "@/components/quiz-system"
-import { ChevronLeft } from "lucide-react"
+import { ClipboardCheck } from "lucide-react"
 
 export default function QuizzesPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Imported Navigation Component */}
+    <div className="flex min-h-screen flex-col bg-background">
       <Navigation />
-
-      {/* Sub-header Navigation ("Back to Home") */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <Link 
-          href="/" 
-          className="inline-flex items-center space-x-1 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span>Back to Home</span>
-        </Link>
-      </div>
-
-      {/* Main Content */}
-      <main className="py-4">
+      <PageHeader
+        eyebrow="Self assessment"
+        eyebrowIcon={ClipboardCheck}
+        title={
+          <>
+            Chemistry <span className="text-primary">Quizzes</span>
+          </>
+        }
+        description="Select your class level and chapter to practice, with instant feedback and explanations for every answer."
+      />
+      <main className="flex-1 pb-12">
         <QuizSystem />
       </main>
+      <Footer />
     </div>
   )
 }

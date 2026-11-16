@@ -11,7 +11,7 @@ export function Podium({ entries }: { entries: LeaderboardEntry[] }) {
   const third = entries[2]!;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <h3 className="font-serif text-lg font-bold text-foreground text-center mb-6">
         Top Performers Podium
       </h3>

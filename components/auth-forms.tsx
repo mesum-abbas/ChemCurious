@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertCircle, CheckCircle2, Clock, GraduationCap, Loader2, ShieldCheck } from "lucide-react"
+import { PASSWORD_HINT, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, validatePassword } from "@/lib/password-policy"
 import { cn } from "@/lib/utils"
+import { AuthShell, AUTH_CARD } from "@/components/auth-shell"
 
 interface AuthFormsProps {
   defaultTab?: "login" | "signup"
@@ -113,8 +115,9 @@ function AuthFormsContent({ defaultTab = "login" }: AuthFormsProps) {
     e.preventDefault()
     setSignupNotice(null)
 
-    if (signupForm.password.length < 6) {
-      setSignupNotice({ tone: "error", text: "Password must be at least 6 characters." })
+    const passwordError = validatePassword(signupForm.password, signupForm.email)
+    if (passwordError) {
+      setSignupNotice({ tone: "error", text: passwordError })
       return
     }
     if (!signupForm.institution.trim()) {
@@ -164,13 +167,15 @@ function AuthFormsContent({ defaultTab = "login" }: AuthFormsProps) {
   const isStaffRequest = accountType !== "student"
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md border-border/60 shadow-md">
+    <AuthShell>
+      <Card className={AUTH_CARD}>
         <CardHeader className="pb-4 text-center">
           <div className="mb-2 flex justify-center">
             <Image src="/ChemCurious_logo.svg" alt="ChemCurious Logo" width={44} height={44} />
           </div>
-          <CardTitle className="text-2xl font-bold text-primary">ChemCurious</CardTitle>
+          <CardTitle className="font-serif text-2xl font-bold text-slate-900">
+            Welcome to <span className="text-primary">ChemCurious</span>
+          </CardTitle>
           <CardDescription>
             {fromAdminArea
               ? "Sign in with your staff or administrator account"
@@ -280,8 +285,8 @@ function AuthFormsContent({ defaultTab = "login" }: AuthFormsProps) {
                             className={cn(
                               "flex min-h-[76px] flex-col items-start gap-1 rounded-lg border-2 p-3 text-left transition-colors",
                               selected
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-primary/40 hover:bg-muted/40"
+                                ? "border-teal-600 bg-teal-50"
+                                : "border-slate-200 bg-white hover:border-teal-200 hover:bg-slate-50"
                             )}
                           >
                             <span className="flex items-center gap-1.5 text-sm font-semibold">
@@ -380,12 +385,17 @@ function AuthFormsContent({ defaultTab = "login" }: AuthFormsProps) {
                       id="signup-password"
                       type="password"
                       autoComplete="new-password"
-                      placeholder="At least 6 characters"
+                      placeholder="Create a strong password"
                       value={signupForm.password}
                       onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
-                      minLength={6}
+                      minLength={PASSWORD_MIN_LENGTH}
+                      maxLength={PASSWORD_MAX_LENGTH}
+                      aria-describedby="signup-password-hint"
                       required
                     />
+                    <p id="signup-password-hint" className="text-xs text-muted-foreground">
+                      {PASSWORD_HINT}
+                    </p>
                   </div>
                   <NoticeBanner notice={signupNotice} />
                   <Button type="submit" className="h-11 w-full" disabled={isSubmitting}>
@@ -398,7 +408,7 @@ function AuthFormsContent({ defaultTab = "login" }: AuthFormsProps) {
           )}
         </CardContent>
       </Card>
-    </div>
+    </AuthShell>
   )
 }
 
@@ -406,9 +416,11 @@ export function AuthForms(props: AuthFormsProps) {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-        </div>
+        <AuthShell>
+          <div className="flex justify-center py-24">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" aria-label="Loading" />
+          </div>
+        </AuthShell>
       }
     >
       <AuthFormsContent {...props} />

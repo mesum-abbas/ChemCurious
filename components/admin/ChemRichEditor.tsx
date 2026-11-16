@@ -504,7 +504,7 @@ export function ChemRichEditor({
     return (
       <div
         className={cn(
-          'rounded-xl border border-border bg-card p-3 animate-pulse text-xs text-muted-foreground',
+          'rounded-2xl border border-border bg-card p-3 animate-pulse text-xs text-muted-foreground',
           className
         )}
         style={{ minHeight }}
@@ -517,7 +517,7 @@ export function ChemRichEditor({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card shadow-xs focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 transition-all overflow-hidden flex flex-col',
+        'rounded-2xl border border-border bg-card shadow-sm focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1 transition-all overflow-hidden flex flex-col',
         className
       )}
     >

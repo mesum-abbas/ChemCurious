@@ -447,9 +447,9 @@ export function MolecularViewer() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Expanded 3D Canvas (occupies 3 cols on desktop) */}
         <div className="lg:col-span-3 flex flex-col">
-          <Card className="flex-1 overflow-hidden border-border/80 shadow-md flex flex-col relative min-h-[440px] sm:min-h-[580px] lg:min-h-[640px] bg-gradient-to-b from-muted/20 via-background to-muted/30">
+          <Card className="flex-1 overflow-hidden border-slate-200/80 bg-white shadow-sm flex flex-col relative min-h-[440px] sm:min-h-[580px] lg:min-h-[640px]">
             {/* Header Status Bar */}
-            <div className="flex flex-wrap items-center justify-between px-5 py-3 border-b border-border/60 bg-card/70 backdrop-blur-xs gap-2">
+            <div className="flex flex-wrap items-center justify-between px-5 py-3 border-b border-border/60 bg-white gap-2">
               <div className="flex items-center gap-2.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="font-semibold text-sm capitalize text-foreground">
@@ -562,7 +562,7 @@ export function MolecularViewer() {
               {/* Loading Overlay */}
               {searching && (
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-xs transition-opacity duration-200">
-                  <div className="p-6 rounded-2xl bg-card border border-border/80 shadow-lg flex flex-col items-center max-w-sm text-center space-y-3">
+                  <div className="p-6 rounded-2xl bg-card border border-border/80 shadow-sm flex flex-col items-center max-w-sm text-center space-y-3">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     <div>
                       <h4 className="font-semibold text-sm">Querying Molecular Database...</h4>

@@ -393,30 +393,30 @@ export function JSONMoleculeRenderer({
   return (
     <div className="w-full flex flex-col gap-4">
       {/* 📋 DISPLACED PROPERTIES BANNER (Now sits out of the canvas view layout as requested) */}
-      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-sm select-text">
+      <div className="w-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 shadow-sm select-text">
         <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2 capitalize">
           {molecule.molecule} <span className="text-base font-normal text-slate-400">({molecule.formula})</span>
         </h3>
         
         <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-y-2 gap-x-4 text-sm text-slate-600 dark:text-slate-300 list-none p-0 m-0 font-medium">
           <li className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span className="w-2 h-2 rounded-full bg-teal-500"></span>
             <span className="text-slate-400 font-normal">Formula:</span> {molecule.formula}
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span className="w-2 h-2 rounded-full bg-teal-500"></span>
             <span className="text-slate-400 font-normal">Geometry:</span> {molecule.geometry || "Determining..."}
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span className="w-2 h-2 rounded-full bg-teal-500"></span>
             <span className="text-slate-400 font-normal">Bond Angles:</span> {molecule.bondAngles || "Determining..."}
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="w-2 h-2 rounded-full bg-teal-500"></span>
             <span className="text-slate-400 font-normal">Atoms:</span> {molecule.atoms?.length || 0}
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-pink-500"></span>
+            <span className="w-2 h-2 rounded-full bg-teal-500"></span>
             <span className="text-slate-400 font-normal">Bonds:</span> {molecule.bonds?.length || 0}
           </li>
         </ul>
@@ -430,7 +430,7 @@ export function JSONMoleculeRenderer({
 
       {/* 🎨 3D MODEL WORKSPACE GRID CONTROLLER CONTAINER */}
       <div
-        className="relative w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg overflow-hidden border"
+        className="relative w-full bg-slate-50 dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800"
         style={{ height }}
       >
         <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
@@ -479,7 +479,7 @@ export function JSONMoleculeRenderer({
               </div>
             </div>
             <button
-              className="text-xs text-blue-500 hover:underline mt-2 font-medium block text-left"
+              className="text-xs text-primary hover:underline mt-2 font-medium block text-left"
               onClick={() => {
                 setSelectedAtom(null)
                 setHighlightedAtoms([])

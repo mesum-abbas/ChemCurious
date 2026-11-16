@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 const stroke = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 2.25,
+  strokeWidth: 2,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
 }
@@ -98,14 +98,14 @@ export type FloatingItem = {
   dx?: number
   dy?: number
   spin?: number
-  /** 0–1; defaults: 0.26 for icons, 0.2 for formula text (text reads heavier) */
+  /** 0–1; defaults: 0.22 for icons, 0.2 for formula text (text reads heavier) */
   opacity?: number
 }
 
 export function FloatingChemIcons({
   items,
   className,
-  itemClassName = "text-teal-600",
+  itemClassName = "text-teal-500",
   defaultOpacity,
 }: {
   items: FloatingItem[]
@@ -129,7 +129,7 @@ export function FloatingChemIcons({
               "--cc-dx": `${item.dx ?? 6}px`,
               "--cc-dy": `${item.dy ?? -18}px`,
               "--cc-spin": `${item.spin ?? 8}deg`,
-              opacity: item.opacity ?? defaultOpacity ?? (item.kind === "text" ? 0.2 : 0.26),
+              opacity: item.opacity ?? defaultOpacity ?? (item.kind === "text" ? 0.2 : 0.22),
             } as CSSProperties
           }
         >

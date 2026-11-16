@@ -36,9 +36,9 @@ export function FaqSection() {
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-[color-mix(in_oklch,var(--primary)_4%,white)] to-white px-4 py-16 sm:py-24"
+      className="relative overflow-hidden border-t border-slate-200/70 bg-white px-4 py-16 sm:py-24"
     >
-      <FloatingChemIcons items={FAQ_ITEMS_BG} itemClassName="text-teal-600" />
+      <FloatingChemIcons items={FAQ_ITEMS_BG} />
 
       <div className="relative mx-auto max-w-3xl">
         <div className="mb-10 text-center sm:mb-12">

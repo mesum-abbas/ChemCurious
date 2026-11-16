@@ -159,7 +159,6 @@ async function handleGet(req: Request, user: any) {
           [sequelize.fn("MAX", sequelize.col("created_at")), "lastActiveAt"],
         ],
         group: ["user_id"],
-        limit: 5,
         raw: true,
       });
     } catch {
@@ -173,7 +172,6 @@ async function handleGet(req: Request, user: any) {
             [sequelize.fn("MAX", sequelize.col("created_at")), "lastActiveAt"],
           ],
           group: ["user_id"],
-          limit: 5,
           raw: true,
         });
       } catch {
@@ -181,10 +179,13 @@ async function handleGet(req: Request, user: any) {
       }
     }
 
-    const topUserIds = topStudentsRaw.map((r: any) => r.userId).filter(Boolean);
+    // Same rules as /api/admin/leaderboard: students only, ranked by mastery points
+    // (then best score). Previously this took the first 5 DB groups unsorted, so the
+    // Overview widget disagreed with the real leaderboard and could list admins.
+    const topUserIds = topStudentsRaw.map((r: any) => Number(r.userId)).filter(Boolean);
     const topUsers = topUserIds.length > 0
       ? await User.findAll({
-          where: { id: { [Op.in]: topUserIds } },
+          where: { id: { [Op.in]: topUserIds }, role: "student" },
           attributes: ["id", "name", "institution"],
           raw: true,
         }).catch(() => [])
@@ -192,23 +193,28 @@ async function handleGet(req: Request, user: any) {
 
     const userMap = new Map(topUsers.map((u) => [u.id, u]));
 
-    const topStudents: LeaderboardEntry[] = topStudentsRaw.map((r: any, idx: number) => {
-      const u = userMap.get(r.userId) || { name: `Student #${r.userId}`, institution: "ChemCurious" };
-      const avg = Math.round(Number(r.avgPercentage || 0) * 10) / 10;
-      const best = Math.round(Number(r.bestPercentage || 0) * 10) / 10;
-      return {
-        rank: idx + 1,
-        userId: Number(r.userId),
-        name: u.name,
-        institution: u.institution,
-        points: Math.round(Number(r.chaptersAttempted || 1) * best),
-        avgPercentage: avg,
-        bestPercentage: best,
-        attempts: Number(r.attempts || 0),
-        chaptersAttempted: Number(r.chaptersAttempted || 0),
-        lastActiveAt: r.lastActiveAt ? new Date(r.lastActiveAt).toISOString() : null,
-      };
-    });
+    const topStudents: LeaderboardEntry[] = topStudentsRaw
+      .filter((r: any) => userMap.has(Number(r.userId)))
+      .map((r: any) => {
+        const u = userMap.get(Number(r.userId))!;
+        const avg = Math.round(Number(r.avgPercentage || 0) * 10) / 10;
+        const best = Math.round(Number(r.bestPercentage || 0) * 10) / 10;
+        return {
+          rank: 0,
+          userId: Number(r.userId),
+          name: u.name,
+          institution: u.institution,
+          points: Math.round(Number(r.chaptersAttempted || 1) * best),
+          avgPercentage: avg,
+          bestPercentage: best,
+          attempts: Number(r.attempts || 0),
+          chaptersAttempted: Number(r.chaptersAttempted || 0),
+          lastActiveAt: r.lastActiveAt ? new Date(r.lastActiveAt).toISOString() : null,
+        };
+      })
+      .sort((a, b) => b.points - a.points || b.bestPercentage - a.bestPercentage)
+      .slice(0, 5)
+      .map((e, idx) => ({ ...e, rank: idx + 1 }));
 
     // 5. Recent Activity from Audit Logs
     const auditWhere: any = {};

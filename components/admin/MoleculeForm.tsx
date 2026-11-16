@@ -344,7 +344,7 @@ export function MoleculeForm({ initial }: MoleculeFormProps) {
             <span className="text-xs text-muted-foreground">Drag to rotate · Scroll to zoom</span>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-3 shadow-sm">
             <MoleculeViewer3D
               name={formValues.name}
               formula={formValues.formula}

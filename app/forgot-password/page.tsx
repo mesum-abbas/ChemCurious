@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
+import { AuthShell, AUTH_CARD } from "@/components/auth-shell"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
@@ -45,10 +46,10 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <AuthShell>
+      <Card className={AUTH_CARD}>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">Forgot Password</CardTitle>
+          <CardTitle className="font-serif text-2xl font-bold text-slate-900">Forgot password?</CardTitle>
           <CardDescription>Enter your email and we&apos;ll send you a reset link</CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,9 +64,9 @@ export default function ForgotPasswordPage() {
                 required
               />
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            {success && <p className="text-sm text-green-600">{success}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            {error && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+            {success && <p className="rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-800">{success}</p>}
+            <Button type="submit" className="h-11 w-full" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Send Reset Link
             </Button>
@@ -78,6 +79,6 @@ export default function ForgotPasswordPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </AuthShell>
   )
 }

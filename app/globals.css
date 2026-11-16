@@ -4,76 +4,81 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0); /* Pure white for clean backgrounds */
-  --foreground: oklch(0.35 0 0); /* Dark gray (#4b5563) for text */
-  --card: oklch(0.98 0 0); /* Light gray (#f9fafb) for card backgrounds */
-  --card-foreground: oklch(0.35 0 0); /* Dark gray for card text */
-  --popover: oklch(1 0 0); /* White for popovers */
-  --popover-foreground: oklch(0.35 0 0); /* Dark gray for popover text */
-  --primary: oklch(0.55 0.15 200); /* Cyan (#0891b2) for primary actions */
-  --primary-foreground: oklch(1 0 0); /* White text on primary */
-  --secondary: oklch(0.75 0.15 85); /* Amber (#f59e0b) for highlights */
-  --secondary-foreground: oklch(0.35 0 0); /* Dark gray on secondary */
-  --muted: oklch(0.98 0 0); /* Light gray for muted sections */
-  --muted-foreground: oklch(0.35 0 0); /* Dark gray for muted text */
-  --accent: oklch(0.75 0.15 85); /* Amber for interactive elements */
-  --accent-foreground: oklch(0.35 0 0); /* Dark gray on accent */
-  --destructive: oklch(0.55 0.25 25); /* Red for errors */
-  --destructive-foreground: oklch(1 0 0); /* White on destructive */
-  --border: oklch(0.92 0 0); /* Light border color */
-  --input: oklch(0.98 0 0); /* Light gray for inputs */
-  --ring: oklch(0.55 0.15 200); /* Cyan for focus rings */
-  --chart-1: oklch(0.35 0 0); /* Dark gray for charts */
-  --chart-2: oklch(0.75 0.15 85); /* Amber for charts */
-  --chart-3: oklch(0.55 0.25 25); /* Red for charts */
-  --chart-4: oklch(0.6 0.2 270); /* Purple for charts */
-  --chart-5: oklch(0.55 0.15 200); /* Cyan for charts */
-  --radius: 0.5rem; /* Rounded corners */
-  --sidebar: oklch(1 0 0); /* White sidebar */
-  --sidebar-foreground: oklch(0.35 0 0); /* Dark gray sidebar text */
-  --sidebar-primary: oklch(0.55 0.15 200); /* Cyan sidebar primary */
-  --sidebar-primary-foreground: oklch(1 0 0); /* White on sidebar primary */
-  --sidebar-accent: oklch(0.75 0.15 85); /* Amber sidebar accent */
-  --sidebar-accent-foreground: oklch(0.35 0 0); /* Dark gray on sidebar accent */
-  --sidebar-border: oklch(0.92 0 0); /* Light sidebar border */
-  --sidebar-ring: oklch(0.55 0.15 200); /* Cyan sidebar focus */
+  /* ChemCurious design system — clean, flat surfaces: slate neutrals + one teal accent.
+     Hex values mirror Tailwind's slate/teal scales so token and utility classes always match. */
+  --background: #f8fafc; /* slate-50: page canvas */
+  --foreground: #0f172a; /* slate-900: headings & default text */
+  --card: #ffffff; /* crisp white cards & panels */
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0d9488; /* teal-600: the single brand accent */
+  --primary-hover: #0f766e; /* teal-700 */
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9; /* slate-100: neutral chips / secondary badges */
+  --secondary-foreground: #334155; /* slate-700 */
+  --muted: #f1f5f9; /* slate-100: tab rails, hover rows */
+  --muted-foreground: #475569; /* slate-600: body copy */
+  --accent: #f0fdfa; /* teal-50: ghost/outline hover & menu focus */
+  --accent-foreground: #0f766e; /* teal-700 */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0; /* slate-200 */
+  --input: #e2e8f0; /* input borders */
+  --ring: #14b8a6; /* teal-500 focus ring */
+  --chart-1: oklch(0.35 0 0);
+  --chart-2: oklch(0.75 0.15 85);
+  --chart-3: oklch(0.55 0.25 25);
+  --chart-4: oklch(0.6 0.2 270);
+  --chart-5: #0d9488;
+  --radius: 0.75rem; /* rounded-xl = 16px (cards), rounded-md = 10px (controls) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #475569;
+  --sidebar-primary: #0d9488;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8fafc;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #14b8a6;
   --font-open-sans: "Open Sans", sans-serif;
   --font-montserrat: "Montserrat", serif;
 }
 
+/* Dark mode is only switched on inside the admin console (AdminThemeToggle). */
 .dark {
-  --background: oklch(0.1 0 0); /* Dark background */
-  --foreground: oklch(0.95 0 0); /* Light text */
-  --card: oklch(0.15 0 0); /* Dark card background */
-  --card-foreground: oklch(0.95 0 0); /* Light card text */
-  --popover: oklch(0.1 0 0); /* Dark popover */
-  --popover-foreground: oklch(0.95 0 0); /* Light popover text */
-  --primary: oklch(0.6 0.15 200); /* Brighter cyan for dark mode */
-  --primary-foreground: oklch(0.1 0 0); /* Dark text on primary */
-  --secondary: oklch(0.8 0.15 85); /* Brighter amber for dark mode */
-  --secondary-foreground: oklch(0.1 0 0); /* Dark text on secondary */
-  --muted: oklch(0.2 0 0); /* Dark muted background */
-  --muted-foreground: oklch(0.7 0 0); /* Light muted text */
-  --accent: oklch(0.8 0.15 85); /* Bright amber accent */
-  --accent-foreground: oklch(0.1 0 0); /* Dark text on accent */
-  --destructive: oklch(0.6 0.25 25); /* Bright red for errors */
-  --destructive-foreground: oklch(0.95 0 0); /* Light text on destructive */
-  --border: oklch(0.2 0 0); /* Dark border */
-  --input: oklch(0.15 0 0); /* Dark input background */
-  --ring: oklch(0.6 0.15 200); /* Bright cyan focus ring */
-  --chart-1: oklch(0.6 0.2 270); /* Purple for dark charts */
-  --chart-2: oklch(0.7 0.17 162); /* Green for dark charts */
-  --chart-3: oklch(0.8 0.15 85); /* Amber for dark charts */
-  --chart-4: oklch(0.65 0.25 303); /* Magenta for dark charts */
-  --chart-5: oklch(0.6 0.15 200); /* Cyan for dark charts */
-  --sidebar: oklch(0.12 0 0); /* Dark sidebar */
-  --sidebar-foreground: oklch(0.95 0 0); /* Light sidebar text */
-  --sidebar-primary: oklch(0.6 0.15 200); /* Bright cyan sidebar primary */
-  --sidebar-primary-foreground: oklch(0.95 0 0); /* Light text on sidebar primary */
-  --sidebar-accent: oklch(0.2 0 0); /* Dark sidebar accent */
-  --sidebar-accent-foreground: oklch(0.95 0 0); /* Light text on sidebar accent */
-  --sidebar-border: oklch(0.2 0 0); /* Dark sidebar border */
-  --sidebar-ring: oklch(0.6 0.15 200); /* Bright cyan sidebar focus */
+  --background: oklch(0.13 0.005 250);
+  --foreground: oklch(0.96 0 0);
+  --card: oklch(0.17 0.006 250);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.15 0.006 250);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: #14b8a6; /* teal-500 reads better on dark */
+  --primary-hover: #2dd4bf; /* teal-400 */
+  --primary-foreground: oklch(0.13 0 0);
+  --secondary: oklch(0.24 0 0);
+  --secondary-foreground: oklch(0.92 0 0);
+  --muted: oklch(0.22 0.005 250);
+  --muted-foreground: oklch(0.72 0.01 250);
+  --accent: oklch(0.26 0.04 190);
+  --accent-foreground: oklch(0.88 0.08 185);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.96 0 0);
+  --border: oklch(0.26 0.005 250);
+  --input: oklch(0.28 0.005 250);
+  --ring: #14b8a6;
+  --chart-1: oklch(0.6 0.2 270);
+  --chart-2: oklch(0.7 0.17 162);
+  --chart-3: oklch(0.8 0.15 85);
+  --chart-4: oklch(0.65 0.25 303);
+  --chart-5: #14b8a6;
+  --sidebar: oklch(0.15 0.006 250);
+  --sidebar-foreground: oklch(0.9 0 0);
+  --sidebar-primary: #14b8a6;
+  --sidebar-primary-foreground: oklch(0.13 0 0);
+  --sidebar-accent: oklch(0.22 0.005 250);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(0.26 0.005 250);
+  --sidebar-ring: #14b8a6;
 }
 
 @theme inline {
@@ -87,6 +92,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -234,4 +240,28 @@ sup,
   .cc-bubble {
     animation: none;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Portal theme (admin / staff console)                               */
+/* ------------------------------------------------------------------ */
+/* AdminShell renders <div class="cc-portal">. Colour tokens, card shape and white form controls
+   are global (see :root), so the console shares the public site's palette; only console-specific
+   layout tweaks remain here. */
+/* Tables: breathing room at the row edges (shadcn default is 8px). */
+.cc-portal :is([data-slot="table-head"], [data-slot="table-cell"]):first-child {
+  padding-left: 1rem;
+}
+.cc-portal :is([data-slot="table-head"], [data-slot="table-cell"]):last-child {
+  padding-right: 1rem;
+}
+/* Tab rails scroll sideways on small screens instead of clipping the last tab. */
+.cc-portal [role="tablist"] {
+  max-width: 100%;
+  overflow-x: auto;
+  justify-content: flex-start; /* centred overflow would hide the first tab */
+  scrollbar-width: none;
+}
+.cc-portal [role="tablist"]::-webkit-scrollbar {
+  display: none;
 }

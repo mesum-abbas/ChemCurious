@@ -161,7 +161,7 @@ export function BulkImportDialog({ chapterId, chapterTitle }: BulkImportDialogPr
 
         <div className="space-y-4 flex-1 overflow-y-auto py-2">
           {/* File input drag/drop box */}
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border p-6 text-center hover:bg-muted/30 transition-colors">
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border p-6 text-center hover:bg-muted/30 transition-colors">
             <FileUp className="h-10 w-10 text-muted-foreground/70 mb-2" />
             <p className="text-sm font-medium text-foreground">
               {fileName ? fileName : 'Select a CSV or JSON file'}

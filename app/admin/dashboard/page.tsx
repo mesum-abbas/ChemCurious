@@ -58,13 +58,13 @@ export default function AdminDashboardPage() {
 
       {/* Top Stat Cards */}
       {isLoading || !stats ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
+            <Skeleton key={i} className={`h-32 rounded-2xl ${i === 4 ? 'col-span-2 md:col-span-1' : ''}`} />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-5">
           <StatCard
             title="3D Molecules"
             value={stats.counts.molecules}
@@ -94,61 +94,40 @@ export default function AdminDashboardPage() {
             value={stats.counts.students}
             subtitle={`${stats.attempts.activeStudents30d} active this month`}
             icon={GraduationCap}
+            className="col-span-2 md:col-span-1"
           />
         </div>
       )}
 
       {/* Content Status Breakdown Grid */}
       {stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Chapters</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-serif">{stats.counts.chapters}</span>
-              <span className="text-xs text-emerald-600 font-medium">
-                {stats.content.chapters.published} pub
-              </span>
-              <span className="text-xs text-amber-600 font-medium">
-                {stats.content.chapters.draft} draft
-              </span>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {(
+            [
+              ['Chapters', stats.counts.chapters, stats.content.chapters],
+              ['Questions', stats.counts.questions, stats.content.questions],
+              ['Reactions', stats.counts.reactions, stats.content.reactions],
+              ['Molecules', stats.counts.molecules, stats.content.molecules],
+            ] as const
+          ).map(([label, total, breakdown]) => (
+            <div
+              key={label}
+              className="flex h-full flex-col justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5 dark:border-border dark:bg-card"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-muted-foreground">{label}</p>
+                <span className="font-serif text-2xl font-bold tabular-nums text-slate-900 dark:text-foreground">{total}</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:ring-emerald-500/30">
+                  {breakdown.published} published
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-500/30">
+                  {breakdown.draft} draft
+                </span>
+              </div>
             </div>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Questions</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-serif">{stats.counts.questions}</span>
-              <span className="text-xs text-emerald-600 font-medium">
-                {stats.content.questions.published} pub
-              </span>
-              <span className="text-xs text-amber-600 font-medium">
-                {stats.content.questions.draft} draft
-              </span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Reactions</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-serif">{stats.counts.reactions}</span>
-              <span className="text-xs text-emerald-600 font-medium">
-                {stats.content.reactions.published} pub
-              </span>
-              <span className="text-xs text-amber-600 font-medium">
-                {stats.content.reactions.draft} draft
-              </span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">Molecules</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold font-serif">{stats.counts.molecules}</span>
-              <span className="text-xs text-emerald-600 font-medium">
-                {stats.content.molecules.published} pub
-              </span>
-              <span className="text-xs text-amber-600 font-medium">
-                {stats.content.molecules.draft} draft
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
@@ -269,24 +248,19 @@ export default function AdminDashboardPage() {
           ) : (
             <div className="divide-y divide-border/60">
               {stats.recentActivity.map((log) => (
-                <div key={log.id} className="py-2.5 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-semibold uppercase text-primary">
-                      {log.action.replace(/_/g, ' ')}
+                <div key={log.id} className="flex items-start justify-between gap-3 py-3 text-xs sm:items-center">
+                  <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
+                    <span className="w-fit rounded-full bg-teal-50 px-2 py-0.5 font-semibold capitalize text-teal-700 ring-1 ring-teal-100 dark:bg-teal-500/10 dark:text-teal-300 dark:ring-teal-500/20">
+                      {log.action.replace(/_/g, ' ').toLowerCase()}
                     </span>
-                    <span className="text-muted-foreground">on</span>
-                    <span className="font-medium capitalize text-foreground">
-                      {log.entityType} #{log.entityId}
+                    <span className="min-w-0 truncate text-slate-500 dark:text-muted-foreground">
+                      on <span className="font-medium capitalize text-slate-800 dark:text-foreground">{log.entityType} #{log.entityId}</span>
+                      {' '}by <span className="font-medium text-slate-800 dark:text-foreground">{log.actor.name}</span>
                     </span>
-                    <span className="text-muted-foreground">by</span>
-                    <span className="font-medium text-foreground">{log.actor.name}</span>
                   </div>
-                  <span className="text-muted-foreground font-mono">
-                    {new Date(log.timestamp).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
+                  <time dateTime={log.timestamp} className="shrink-0 tabular-nums text-slate-500 dark:text-muted-foreground">
+                    {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </time>
                 </div>
               ))}
             </div>

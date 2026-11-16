@@ -80,7 +80,7 @@ export default function AdminAuditLogsPage() {
           title="System Audit Logs"
           description="Complete chronological timeline of administrative actions"
         />
-        <Card className="rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/20 shadow-xs">
+        <Card className="rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/40 dark:bg-rose-950/20 shadow-sm">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
@@ -218,7 +218,7 @@ export default function AdminAuditLogsPage() {
       )}
 
       {/* Filter Bar */}
-      <Card className="rounded-xl border border-border shadow-xs">
+      <Card className="gap-0 py-0 shadow-sm">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="relative flex-1">

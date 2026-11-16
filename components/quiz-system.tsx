@@ -73,18 +73,18 @@ function QuestionCard({
             const isSelected = index === selectedAnswer
             const stateClass =
               result && index === result.correctAnswer
-                ? "border-green-400 bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
                 : result && isSelected
-                  ? "border-red-400 bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200"
+                  ? "border-red-300 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-200"
                   : isSelected
-                    ? "border-primary bg-primary/10 ring-1 ring-primary"
-                    : "border-border hover:border-primary/50 hover:bg-muted/40"
+                    ? "border-teal-600 bg-teal-50 text-teal-900"
+                    : "border-slate-200 bg-white hover:border-teal-200 hover:bg-slate-50"
 
             return (
               <Label
                 key={index}
                 htmlFor={`option-${index}`}
-                className={`flex min-h-[52px] w-full items-center gap-3 rounded-lg border-2 px-4 py-3 text-base font-normal leading-snug transition-colors ${
+                className={`flex min-h-[52px] w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-base font-normal leading-snug transition-colors ${
                   result ? "cursor-default" : "cursor-pointer"
                 } ${stateClass}`}
               >
@@ -96,10 +96,10 @@ function QuestionCard({
         </RadioGroup>
 
         {result && (
-          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+          <div className="mt-4 rounded-xl border border-slate-200/80 bg-slate-50 p-4">
             <div className="flex items-center gap-2 mb-2">
               {result.isCorrect ? (
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-5 w-5 text-emerald-600" />
               ) : (
                 <XCircle className="h-5 w-5 text-red-600" />
               )}
@@ -260,14 +260,17 @@ function QuizViewer({ chapter, onBack }: { chapter: Chapter; onBack: () => void 
     return (
       <Card className="max-w-xl mx-auto">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            {passed ? <Trophy className="h-16 w-16 text-yellow-500" /> : <Target className="h-16 w-16 text-blue-500" />}
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-teal-50 text-teal-600 ring-1 ring-teal-100">
+            {passed ? <Trophy className="h-10 w-10" /> : <Target className="h-10 w-10" />}
           </div>
           <CardTitle className="text-2xl font-serif">{passed ? "Congratulations!" : "Keep Practicing!"}</CardTitle>
           <CardDescription>You scored {percentage}% on Chapter {chapter.chapter_number}: {chapter.title}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
-          <div className="text-3xl font-bold">{percentage}%</div>
+          <div className="font-serif text-4xl font-black text-slate-900">{percentage}%</div>
+          <div className="mx-auto h-2 w-full max-w-xs overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-teal-600" style={{ width: `${percentage}%` }} />
+          </div>
           <p className="text-sm text-muted-foreground">
             {correctCount} out of {finalResult?.totalQuestions ?? questions.length} correct
           </p>
@@ -290,8 +293,8 @@ function QuizViewer({ chapter, onBack }: { chapter: Chapter; onBack: () => void 
       </div>
 
       <div>
-        <h1 className="text-2xl font-serif font-bold mb-2">Chapter {chapter.chapter_number}: {chapter.title}</h1>
-        <Progress value={progress} className="h-2" />
+        <h2 className="mb-3 font-serif text-2xl font-bold text-slate-900">Chapter {chapter.chapter_number}: {chapter.title}</h2>
+        <Progress value={progress} className="h-2 bg-slate-100" />
       </div>
 
       <QuestionCard
@@ -356,7 +359,7 @@ export function QuizSystem({ initialChapterId }: { initialChapterId?: number } =
 
   if (selectedChapter) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
         <QuizViewer chapter={selectedChapter} onBack={() => setSelectedChapter(null)} />
       </div>
     )
@@ -369,11 +372,7 @@ export function QuizSystem({ initialChapterId }: { initialChapterId?: number } =
   })
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
-      <div>
-        <h2 className="text-2xl font-serif font-bold mb-1">Chemistry Quizzes</h2>
-        <p className="text-muted-foreground">Select your class level and topic to practice</p>
-      </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full space-y-6">
 
       <Tabs defaultValue="9" value={selectedClass} onValueChange={setSelectedClass}>
         <TabsList className="grid grid-cols-4 h-auto w-full max-w-md">
@@ -408,8 +407,8 @@ export function QuizSystem({ initialChapterId }: { initialChapterId?: number } =
                 key={ch.id}
                 className={`transition-all ${
                   hasQuestions
-                    ? "hover:shadow-lg cursor-pointer border-primary/20"
-                    : "opacity-60 cursor-not-allowed bg-muted/30"
+                    ? "cursor-pointer hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md"
+                    : "cursor-not-allowed bg-slate-50 opacity-60 shadow-none"
                 }`}
                 onClick={() => hasQuestions && setSelectedChapter(ch)}
               >
@@ -421,8 +420,8 @@ export function QuizSystem({ initialChapterId }: { initialChapterId?: number } =
                     {hasQuestions ? (
                       <span className="text-xs text-muted-foreground">{count} questions</span>
                     ) : (
-                      <Badge variant="outline" className="text-xs border-amber-500 text-amber-600 dark:text-amber-400">
-                        Coming Soon 🚀
+                      <Badge variant="outline" className="text-xs border-slate-200 bg-white text-slate-500">
+                        Coming soon
                       </Badge>
                     )}
                   </div>

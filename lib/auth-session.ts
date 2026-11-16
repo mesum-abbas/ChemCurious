@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import type { User, AccountStatus, Role } from "./db";
 import {
   signToken,
+  verifyToken,
   ADMIN_SESSION_COOKIE,
   STUDENT_SESSION_COOKIE,
   LEGACY_SESSION_COOKIE,
@@ -49,4 +50,15 @@ export async function issueSessionForUser(user: Pick<User, "id" | "email" | "nam
     cookieStore.set(STUDENT_SESSION_COOKIE, token, cookieOptions);
     cookieStore.delete(ADMIN_SESSION_COOKIE);
   }
+}
+
+/**
+ * Verified payload of the current student session, or null when signed out / invalid.
+ * Single place that knows which cookies carry a student session (current + legacy name).
+ */
+export async function getStudentSession(): Promise<any | null> {
+  const cookieStore = await cookies();
+  const token =
+    cookieStore.get(STUDENT_SESSION_COOKIE)?.value || cookieStore.get(LEGACY_SESSION_COOKIE)?.value;
+  return token ? verifyToken(token) : null;
 }

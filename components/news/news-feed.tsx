@@ -63,7 +63,7 @@ function FeaturedCard({ article, now, showDate }: { article: NewsArticle; now: n
       >
         <span aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-2xl" />
         <div className="relative flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-primary-foreground shadow-sm shadow-primary/30">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-primary-foreground shadow-sm">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
             Featured discovery
           </span>
@@ -81,7 +81,7 @@ function FeaturedCard({ article, now, showDate }: { article: NewsArticle; now: n
         <p className="relative mt-3 line-clamp-3 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">{article.summary}</p>
         <div className="relative mt-6 flex flex-wrap items-center justify-between gap-3">
           <span className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold", CATEGORY_TONE[article.category])}>{article.category}</span>
-          <span className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all group-hover:shadow-xl group-hover:shadow-primary/40">
+          <span className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-all group-hover:bg-primary-hover group-hover:shadow-md">
             Read Full Article
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
             <span className="sr-only">(opens in a new tab)</span>
@@ -245,7 +245,7 @@ export function NewsFeed() {
               className={cn(
                 "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "border border-slate-200 bg-white/80 text-slate-600 hover:border-primary/40 hover:text-primary"
               )}
             >
@@ -290,7 +290,7 @@ export function NewsFeed() {
             <button
               type="button"
               onClick={() => void load()}
-              className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/25 transition-transform hover:-translate-y-0.5"
+              className="mt-5 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-transform hover:-translate-y-0.5"
             >
               <RefreshCw className="h-4 w-4" aria-hidden />
               Try again

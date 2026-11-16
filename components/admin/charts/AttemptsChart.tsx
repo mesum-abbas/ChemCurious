@@ -89,7 +89,7 @@ export function AttemptsChart({ data, title, description, height = 260 }: Attemp
 
   if (title) {
     return (
-      <Card className="rounded-xl border border-border shadow-xs">
+      <Card className="h-full rounded-2xl border shadow-sm">
         <CardHeader>
           <CardTitle className="font-serif text-base font-semibold">{title}</CardTitle>
           {description && (

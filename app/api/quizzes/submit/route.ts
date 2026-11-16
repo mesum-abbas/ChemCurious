@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken, STUDENT_SESSION_COOKIE, LEGACY_SESSION_COOKIE } from "@/lib/auth";
+import { getStudentSession } from "@/lib/auth-session";
 import { Chapter, Question, QuizAttempt, QuizAttemptAnswer, User, ensureDbSynced } from "@/lib/db";
 import { Op } from "sequelize";
 
@@ -17,9 +16,7 @@ function normalizeOption(value: unknown): "A" | "B" | "C" | "D" | null {
 export async function POST(req: Request) {
   try {
     await ensureDbSynced();
-    const cookieStore = await cookies();
-    const token = cookieStore.get(STUDENT_SESSION_COOKIE)?.value || cookieStore.get(LEGACY_SESSION_COOKIE)?.value;
-    const session = token ? verifyToken(token) : null;
+    const session = await getStudentSession();
     if (!session?.id) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
 
     const user = await User.findByPk(session.id, { attributes: ["id", "role", "status"] });

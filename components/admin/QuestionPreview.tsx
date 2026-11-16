@@ -34,7 +34,7 @@ export function QuestionPreview({
   const optionKeys: OptionKey[] = ['A', 'B', 'C', 'D'];
 
   return (
-    <Card className={cn('border-border shadow-sm rounded-xl overflow-hidden', className)}>
+    <Card className={cn('gap-0 overflow-hidden py-0 shadow-sm', className)}>
       <CardHeader className="p-5 pb-3 border-b border-border/50 bg-muted/20">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Atom, Heart, BookOpen, Sparkles, ExternalLink, Mail, Github } from "lucide-react";
+import { Github } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/80 bg-card/60 backdrop-blur-xs text-foreground mt-auto">
+    <footer className="mt-auto border-t border-slate-200/80 bg-white text-slate-900">
       <div className="container mx-auto max-w-7xl px-4 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Info */}
@@ -18,7 +18,7 @@ export function Footer() {
                 className="h-9 w-auto object-contain"
               />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
+            <p className="text-sm text-slate-600 leading-relaxed max-w-sm">
               An interactive spatial learning environment designed to help students, educators, and science
               enthusiasts visualize molecular structures, explore elemental trends, and model chemical reactions in 3D.
             </p>
@@ -27,7 +27,7 @@ export function Footer() {
           {/* Core Tools */}
           <div className="space-y-3">
             <h4 className="font-serif font-bold text-sm tracking-wide text-foreground">Core Modules</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-slate-600">
               <li>
                 <Link href="/molecules" className="hover:text-primary transition-colors">
                   3D Molecules Viewer
@@ -48,13 +48,18 @@ export function Footer() {
                   Adaptive Quizzes
                 </Link>
               </li>
+              <li>
+                <Link href="/news" className="hover:text-primary transition-colors">
+                  Chemistry News
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Study & Topics */}
           <div className="space-y-3">
             <h4 className="font-serif font-bold text-sm tracking-wide text-foreground">Chemistry Topics</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-slate-600">
               <li>
                 <Link href="/molecules" className="hover:text-primary transition-colors">
                   VSEPR Spatial Geometry
@@ -81,7 +86,7 @@ export function Footer() {
           {/* Platform & Dedication */}
           <div className="space-y-3">
             <h4 className="font-serif font-bold text-sm tracking-wide text-foreground">Community & Tribute</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-slate-600">
               <li>
                 <Link href="/about" className="hover:text-primary transition-colors flex items-center gap-1">
                   About Us &amp; Tribute
@@ -107,7 +112,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-6 text-xs text-slate-500 sm:flex-row">
           <div className="flex items-center gap-4">
             <Link href="/about" className="hover:underline">
               Legacy
@@ -121,6 +126,7 @@ export function Footer() {
               Periodic Elements
             </Link>
           </div>
+          <p>© {new Date().getFullYear()} ChemCurious · In loving memory of Sir Fayyaz</p>
         </div>
       </div>
     </footer>

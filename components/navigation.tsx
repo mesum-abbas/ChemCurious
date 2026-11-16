@@ -22,10 +22,9 @@ const NAV_LINKS = [
   { href: "/molecules", label: "3D Molecules" },
   { href: "/periodic", label: "Periodic Table", aliases: ["/periodic-table"] },
   { href: "/reactions", label: "Reactions" },
-  { href: "/concepts", label: "Concept Lab" },
-  { href: "/news", label: "News" },
   { href: "/quizzes", label: "Quizzes", studentOnly: true },
   { href: "/dashboard", label: "Dashboard", studentOnly: true },
+  { href: "/news", label: "News" }
 ] as const;
 
 const ADMIN_CONSOLE_LINK = { href: "/admin/dashboard", label: "Admin Console" } as const;
@@ -82,8 +81,8 @@ export function Navigation() {
                 className={cn(
                   "whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm font-medium transition-colors lg:px-3.5",
                   active
-                    ? "bg-primary/10 text-primary"
-                    : "text-slate-600 hover:bg-slate-900/5 hover:text-slate-900"
+                    ? "bg-teal-50 text-teal-700"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
                 {item.label}
@@ -117,7 +116,7 @@ export function Navigation() {
               </Button>
             </>
           ) : (
-            <Button asChild size="sm" className="h-9 rounded-full px-5 shadow-md shadow-primary/25">
+            <Button asChild size="sm" className="h-9 rounded-full px-5">
               <Link href="/auth">Sign In</Link>
             </Button>
           )}
@@ -165,8 +164,8 @@ export function Navigation() {
                     className={cn(
                       "rounded-lg px-4 py-3 text-base font-medium transition-colors",
                       active
-                        ? "bg-primary/10 text-primary"
-                        : "text-gray-800 hover:bg-muted active:bg-muted"
+                        ? "bg-teal-50 text-teal-700"
+                        : "text-slate-700 hover:bg-slate-100 active:bg-slate-100"
                     )}
                   >
                     {item.label}

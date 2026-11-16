@@ -1,6 +1,6 @@
 import { FloatingChemIcons, type FloatingItem } from "./chem-icons"
 
-// Hero background: soft radial wash, faint dot grid and floating chemistry line-art.
+// Hero background: flat teal tint, faint dot grid and floating chemistry line-art.
 // Placement keeps the densest area away from the headline (left-centre) on desktop.
 const HERO_ITEMS: FloatingItem[] = [
   // ---- Desktop (lg+): two-column layout — icons sit in the gutters and the empty top/bottom bands
@@ -27,7 +27,7 @@ const HERO_ITEMS: FloatingItem[] = [
 export function ChemBackground() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_70%_20%,color-mix(in_oklch,var(--primary)_12%,transparent),transparent_70%),radial-gradient(ellipse_60%_50%_at_0%_100%,color-mix(in_oklch,var(--primary)_8%,transparent),transparent_70%)]" />
+      <div className="absolute inset-0 bg-teal-50/30" />
       <div className="absolute inset-0 opacity-[0.35] [background-image:radial-gradient(color-mix(in_oklch,var(--primary)_18%,transparent)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]" />
       <FloatingChemIcons items={HERO_ITEMS} />
     </div>

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Navigation } from "@/components/navigation";
+import { Footer } from "@/components/footer";
+import { PageHeader } from "@/components/page-header";
 import {
   Dialog,
   DialogContent,
@@ -22,13 +24,11 @@ import {
   RotateCcw,
   Play,
   Loader2,
-  ChevronLeft,
   Info,
   Search,
   X,
   Maximize2,
 } from "lucide-react";
-import Link from "next/link";
 
 type MoleculeData = {
   atoms: Array<{ element: string; x: number; y: number; z: number }>;
@@ -228,7 +228,7 @@ function MoleculeViewer({
     >
       {!isScriptLoaded && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/70">
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
       )}
       <div ref={containerRef} className="absolute inset-0 h-full w-full" />
@@ -366,7 +366,7 @@ export default function ReactionSimulatorPage() {
       type="button"
       key={`${entry.molecule}-${index}`}
       onClick={() => setExpandedMolecule(entry)}
-      className="group flex w-full max-w-[260px] min-w-0 sm:w-[230px] cursor-pointer flex-col items-center gap-2 rounded-xl border bg-muted/10 p-2 text-left shadow-xs sm:p-3 transition-all hover:border-primary/50 hover:bg-muted/25 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group flex w-full max-w-[260px] min-w-0 sm:w-[230px] cursor-pointer flex-col items-center gap-2 rounded-xl border bg-white p-2 text-left shadow-xs sm:p-3 transition-all hover:border-teal-200 hover:bg-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* On touch screens the small preview ignores gestures (so swiping scrolls the page);
           tapping the card opens the full interactive view instead. */}
@@ -391,26 +391,25 @@ export default function ReactionSimulatorPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="mb-4 flex items-center gap-2 sm:mb-6">
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              <ChevronLeft className="mr-1 h-4 w-4" /> <span className="hidden sm:inline">Back to&nbsp;</span>Home
-            </Button>
-          </Link>
-          <span className="text-muted-foreground">|</span>
-          <div className="flex items-center gap-2 whitespace-nowrap font-bold text-primary">
-            <FlaskConical className="h-5 w-5" />
-            <span>Reaction Simulator</span>
-          </div>
-        </div>
+      <PageHeader
+        eyebrow="Reaction Simulator"
+        eyebrowIcon={FlaskConical}
+        title={
+          <>
+            Simulate Chemical <span className="text-primary">Reactions</span>
+          </>
+        }
+        description="Pick an organic or inorganic reaction, inspect every reactant and product in 3D, and watch reactants turn into products."
+      />
+
+      <div className="mx-auto w-full max-w-7xl flex-1 px-4 pb-16 pt-8 sm:px-6">
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
           <div className="flex min-w-0 flex-col gap-4 lg:col-span-1">
-            <div className="rounded-xl border bg-card p-4 shadow-sm sm:p-5">
+            <div className="rounded-2xl border bg-card p-4 shadow-sm sm:p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-foreground">Reactions</h3>
                 <span className="text-xs font-semibold text-muted-foreground">
@@ -448,7 +447,7 @@ export default function ReactionSimulatorPage() {
                   placeholder={`Search ${activeTab} reactions...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background py-1.5 pl-8 pr-8 text-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="w-full rounded-md border border-input bg-card py-1.5 pl-8 pr-8 text-xs placeholder:text-muted-foreground transition-[color,box-shadow] focus-visible:border-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20"
                 />
                 {searchQuery && (
                   <button
@@ -476,8 +475,8 @@ export default function ReactionSimulatorPage() {
                       onClick={() => handleReactionChange(reaction)}
                       className={`w-full rounded-lg border px-3 py-2.5 text-left text-xs transition-all ${
                         selectedReaction?.id === reaction.id
-                          ? "border-primary bg-primary text-primary-foreground font-medium"
-                          : "border-border bg-background text-foreground hover:bg-muted/50"
+                          ? "border-teal-200 bg-teal-50 text-teal-800 font-medium"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
                       <div className="break-words font-medium leading-snug lg:truncate">
@@ -487,7 +486,7 @@ export default function ReactionSimulatorPage() {
                         <div
                           className={`mt-1 text-[11px] ${
                             selectedReaction?.id === reaction.id
-                              ? "text-primary-foreground/80"
+                              ? "text-teal-700/80"
                               : "text-muted-foreground"
                           }`}
                         >
@@ -585,11 +584,11 @@ export default function ReactionSimulatorPage() {
                   )}
                 </Card>
 
-                <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-blue-800 shadow-sm">
-                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+                <div className="flex gap-3 rounded-2xl border border-teal-200 bg-teal-50/60 p-4 text-sm text-teal-900">
+                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
                   <div>
                     <h5 className="mb-1 font-bold">Interactive Lab Guide</h5>
-                    <p className="text-xs leading-relaxed text-blue-700/90">
+                    <p className="text-xs leading-relaxed text-teal-800/90">
                       <span className="pointer-coarse:hidden">
                         Drag to rotate each molecule in 3D space, scroll to zoom, and click simulate to view the transformation from reactants to products.
                       </span>
@@ -601,7 +600,7 @@ export default function ReactionSimulatorPage() {
                 </div>
               </>
             ) : (
-              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center text-muted-foreground">
+              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-muted-foreground">
                 <FlaskConical className="mb-4 h-12 w-12 animate-pulse text-muted-foreground/60" />
                 <h3 className="mb-1 text-lg font-bold">No Reaction Selected</h3>
                 <p className="max-w-xs text-sm">
@@ -651,6 +650,8 @@ export default function ReactionSimulatorPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>
   );
 }

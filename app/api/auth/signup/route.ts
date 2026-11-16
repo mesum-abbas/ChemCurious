@@ -3,19 +3,30 @@ import { UniqueConstraintError } from "sequelize";
 import { User, ensureDbSynced, type Role, type AccountStatus } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 import { issueSessionForUser } from "@/lib/auth-session";
+import { checkRateLimit, getClientIp, tooManyRequests } from "@/lib/rate-limit";
+import { AUTH_LIMITS } from "@/lib/auth-rate-limits";
+import { validatePassword } from "@/lib/password-policy";
+import { isDisposableEmail } from "@/lib/disposable-email";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_NAME_LENGTH = 100;
+const MAX_INSTITUTION_LENGTH = 150;
 
 /**
  * Self-registration.
  *  - role "student" (default): active immediately, student session issued.
  *  - role "staff" | "admin": created as pending_approval, NO session issued;
  *    an existing administrator must approve the request in /admin/users.
- * `/api/auth/register` re-exports this handler.
+ * (The old `/api/auth/register` alias was removed: nothing called it.)
  */
 export async function POST(request: Request) {
   try {
+    // Bot account creation: every attempt from an IP counts (also throttles probing which
+    // emails exist via the 409 response). Checked before parsing or touching the database.
+    const limit = checkRateLimit(`signup:ip:${getClientIp(request)}`, AUTH_LIMITS.signup.ip);
+    if (!limit.success) return tooManyRequests(limit, "sign-up attempts");
+
     await ensureDbSynced();
 
     const body = await request.json().catch(() => null);
@@ -31,14 +42,27 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!EMAIL_PATTERN.test(email)) {
+    if (email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(email)) {
       return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
-    if (password.length < MIN_PASSWORD_LENGTH) {
+    if (isDisposableEmail(email)) {
       return NextResponse.json(
-        { error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` },
+        { error: "Temporary or disposable email addresses aren't accepted. Please use your regular email." },
         { status: 400 }
       );
+    }
+    if (name.length > MAX_NAME_LENGTH) {
+      return NextResponse.json({ error: `Name must be at most ${MAX_NAME_LENGTH} characters.` }, { status: 400 });
+    }
+    if (institution.length > MAX_INSTITUTION_LENGTH) {
+      return NextResponse.json(
+        { error: `Institution must be at most ${MAX_INSTITUTION_LENGTH} characters.` },
+        { status: 400 }
+      );
+    }
+    const passwordError = validatePassword(password, email);
+    if (passwordError) {
+      return NextResponse.json({ error: passwordError }, { status: 400 });
     }
 
     // Anything other than an explicit staff/admin request is a student account

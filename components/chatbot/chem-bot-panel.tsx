@@ -200,7 +200,7 @@ export function ChemBotPanel({ open, onClose, storageKey, authReady, page, onThr
     <section
       role="dialog"
       aria-label="ChemBot AI Tutor"
-      className="flex h-[500px] max-h-[80dvh] w-[92vw] flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-lg motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 sm:w-[380px]"
+      className="flex h-full w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-lg motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 sm:w-[380px]"
     >
       {/* Header */}
       <header className="flex items-center gap-2.5 border-b bg-primary/5 px-3.5 py-2.5">

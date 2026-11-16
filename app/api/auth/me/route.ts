@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken, STUDENT_SESSION_COOKIE, LEGACY_SESSION_COOKIE } from "@/lib/auth";
+import { getStudentSession } from "@/lib/auth-session";
 import { User, ensureDbSynced } from "@/lib/db";
 
 export async function GET() {
   try {
     await ensureDbSynced();
 
-    const cookieStore = await cookies();
-    const tokenCookie = cookieStore.get(STUDENT_SESSION_COOKIE) || cookieStore.get(LEGACY_SESSION_COOKIE);
-
-    if (!tokenCookie || !tokenCookie.value) {
-      return NextResponse.json({ user: null }, { status: 200 });
-    }
-
-    const payload = verifyToken(tokenCookie.value);
+    const payload = await getStudentSession();
     if (!payload || !payload.id) {
       return NextResponse.json({ user: null }, { status: 200 });
     }

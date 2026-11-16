@@ -14,16 +14,7 @@ const CTA_BG: FloatingItem[] = [
 
 export function CtaBanner() {
   return (
-    <section aria-labelledby="cta-heading" className="relative isolate overflow-hidden bg-gradient-to-br from-[#007A78] via-[#0D9488] to-[#065F5B]">
-      {/* Mesh glow: soft radial light spots for depth */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_50%_70%_at_15%_10%,rgba(255,255,255,0.18),transparent_60%),radial-gradient(ellipse_45%_60%_at_85%_90%,rgba(94,234,212,0.28),transparent_65%),radial-gradient(ellipse_35%_45%_at_60%_40%,rgba(6,95,91,0.55),transparent_70%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] [background-image:radial-gradient(rgba(255,255,255,0.9)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]"
-      />
+    <section aria-labelledby="cta-heading" className="relative isolate overflow-hidden bg-primary">
       <FloatingChemIcons items={CTA_BG} className="-z-10" itemClassName="text-white" defaultOpacity={0.18} />
 
       <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:py-24">
@@ -44,7 +35,7 @@ export function CtaBanner() {
         <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
           <Link
             href="/molecules"
-            className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-base font-semibold text-[#065F5B] shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/50 active:translate-y-0 active:scale-[0.98]"
+            className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-7 text-base font-semibold text-teal-800 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/50 active:translate-y-0 active:scale-[0.98]"
           >
             Launch 3D Lab
             <LinkPendingIcon>

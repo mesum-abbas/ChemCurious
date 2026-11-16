@@ -89,7 +89,7 @@ export function ScoreDistributionChart({
 
   if (title) {
     return (
-      <Card className="rounded-xl border border-border shadow-xs">
+      <Card className="h-full rounded-2xl border shadow-sm">
         <CardHeader>
           <CardTitle className="font-serif text-base font-semibold">{title}</CardTitle>
           {description && (

@@ -129,13 +129,13 @@ export default function AdminQuizzesPage() {
       {error ? (
         <ErrorState error={error} onRetry={() => refetch()} />
       ) : isLoading ? (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+        <div className="rounded-2xl border border-border bg-card p-6 space-y-3">
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-12 w-full" />
           <Skeleton className="h-12 w-full" />
         </div>
       ) : chapters.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-12 text-center bg-card/40 space-y-3">
+        <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-card/40 space-y-3">
           <p className="font-serif text-lg font-semibold text-foreground">
             No chapters found for Class {selectedClass}
           </p>
@@ -147,10 +147,65 @@ export default function AdminQuizzesPage() {
           </Button>
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <>
+        {/* Mobile: one card per chapter so status and every action stay reachable */}
+        <ul className="space-y-3 md:hidden">
+          {chapters.map((ch, idx) => (
+            <li key={ch.id} className="rounded-2xl border border-slate-200/80 bg-card p-4 shadow-sm dark:border-border">
+              <div className="flex items-start gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 font-mono text-xs font-bold text-slate-600 dark:bg-muted dark:text-muted-foreground">
+                  {ch.order}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/admin/quizzes/chapters/${ch.id}`}
+                    className="font-serif text-sm font-semibold leading-snug text-slate-900 hover:text-primary dark:text-foreground"
+                  >
+                    {ch.title}
+                  </Link>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-muted-foreground">
+                    <StatusBadge status={ch.status} />
+                    <span>{ch.questionCount} questions</span>
+                    <span className="text-emerald-600">{ch.publishedQuestionCount} published</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-border">
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" disabled={idx === 0 || reorder.isPending} onClick={() => handleMove(idx, 'up')} className="h-10 w-10 text-muted-foreground" aria-label={`Move ${ch.title} up`}>
+                    <ArrowUp className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" disabled={idx === chapters.length - 1 || reorder.isPending} onClick={() => handleMove(idx, 'down')} className="h-10 w-10 text-muted-foreground" aria-label={`Move ${ch.title} down`}>
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button asChild variant="outline" size="sm" className="h-10 px-3 text-xs">
+                    <Link href={`/admin/quizzes/chapters/${ch.id}`}>
+                      <Eye className="h-3.5 w-3.5" /> Questions
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleToggleStatus(ch)} className="h-10 w-10" aria-label={ch.status === 'published' ? 'Unpublish (draft)' : 'Publish chapter'}>
+                    {ch.status === 'published' ? <XCircle className="h-4 w-4 text-amber-600" /> : <CheckCircle className="h-4 w-4 text-emerald-600" />}
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(ch)} className="h-10 w-10 text-muted-foreground" aria-label="Edit chapter">
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  {isAdmin && (
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(ch)} className="h-10 w-10 text-muted-foreground hover:text-destructive" aria-label="Delete chapter">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="hidden overflow-hidden rounded-2xl border border-slate-200/80 bg-card shadow-sm md:block dark:border-border">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-muted/40">
+              <TableHeader className="bg-slate-50/80 dark:bg-muted/40">
                 <TableRow>
                   <TableHead className="w-16 text-center text-xs">Order</TableHead>
                   <TableHead className="text-xs">Chapter Title</TableHead>
@@ -226,6 +281,7 @@ export default function AdminQuizzesPage() {
                           onClick={() => handleToggleStatus(ch)}
                           className="h-8 w-8 text-muted-foreground hover:text-foreground"
                           title={ch.status === 'published' ? 'Unpublish (draft)' : 'Publish chapter'}
+                          aria-label={ch.status === 'published' ? 'Unpublish (draft)' : 'Publish chapter'}
                         >
                           {ch.status === 'published' ? (
                             <XCircle className="h-4 w-4 text-amber-600" />
@@ -261,6 +317,7 @@ export default function AdminQuizzesPage() {
             </Table>
           </div>
         </div>
+        </>
       )}
 
       {/* Chapter Edit/Create Modal */}

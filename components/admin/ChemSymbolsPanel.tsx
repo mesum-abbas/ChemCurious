@@ -120,7 +120,7 @@ export function ChemSymbolsPanel({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card shadow-xs overflow-hidden',
+        'rounded-2xl border border-border bg-card shadow-sm overflow-hidden',
         className
       )}
     >

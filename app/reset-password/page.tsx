@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { PASSWORD_HINT, validatePassword } from "@/lib/password-policy"
 import { Loader2 } from "lucide-react"
+import { AuthShell, AUTH_CARD } from "@/components/auth-shell"
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -31,8 +33,9 @@ function ResetPasswordForm() {
       return
     }
 
-    if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters")
+    const passwordError = validatePassword(newPassword)
+    if (passwordError) {
+      setError(passwordError)
       return
     }
 
@@ -71,9 +74,9 @@ function ResetPasswordForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className={AUTH_CARD}>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-primary">Reset Password</CardTitle>
+        <CardTitle className="font-serif text-2xl font-bold text-slate-900">Reset password</CardTitle>
         <CardDescription>Enter your new password below</CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,10 +86,15 @@ function ResetPasswordForm() {
             <Input
               id="new-password"
               type="password"
+              autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              aria-describedby="new-password-hint"
               required
             />
+            <p id="new-password-hint" className="text-xs text-muted-foreground">
+              {PASSWORD_HINT}
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -98,9 +106,9 @@ function ResetPasswordForm() {
               required
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          {success && <p className="text-sm text-green-600">{success}</p>}
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          {error && <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+          {success && <p className="rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-800">{success}</p>}
+          <Button type="submit" className="h-11 w-full" disabled={isLoading}>
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Reset Password
           </Button>
@@ -118,10 +126,16 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin text-primary" />}>
+    <AuthShell>
+      <Suspense
+        fallback={
+          <div className="flex justify-center py-24">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading" />
+          </div>
+        }
+      >
         <ResetPasswordForm />
       </Suspense>
-    </div>
+    </AuthShell>
   )
 }

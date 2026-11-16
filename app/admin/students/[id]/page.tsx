@@ -75,7 +75,7 @@ export default function StudentDetailPage({
       </div>
 
       {/* Student Profile Header */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary font-serif font-black text-2xl">
             {profile.name.charAt(0)}
@@ -152,7 +152,7 @@ export default function StudentDetailPage({
 
       {/* Weak Topics Callout (if any exist) */}
       {weakTopics && weakTopics.length > 0 && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 space-y-2">
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 space-y-2">
           <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-semibold text-sm">
             <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <span>Targeted Learning Opportunity: Weak Concept Areas Detected</span>

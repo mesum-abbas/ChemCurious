@@ -12,7 +12,7 @@ const DynamicMoleculeRenderer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex flex-col items-center justify-center h-80 rounded-xl border border-border bg-card p-4 space-y-3">
+      <div className="flex flex-col items-center justify-center h-80 rounded-2xl border border-border bg-card p-4 space-y-3">
         <Skeleton className="h-12 w-full max-w-sm" />
         <Skeleton className="h-48 w-full max-w-sm" />
       </div>
@@ -43,7 +43,7 @@ export function MoleculeViewer3D({
 }: MoleculeViewer3DProps) {
   if (!atoms || atoms.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-border bg-card/40 p-6 text-center text-sm text-muted-foreground">
+      <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-border bg-card/40 p-6 text-center text-sm text-muted-foreground">
         No atomic coordinates available to render 3D model.
       </div>
     );

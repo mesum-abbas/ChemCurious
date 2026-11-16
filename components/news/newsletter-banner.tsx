@@ -39,11 +39,7 @@ export function NewsletterBanner() {
   }
 
   return (
-    <section aria-labelledby="digest-heading" className="relative isolate overflow-hidden bg-gradient-to-br from-[#007A78] via-[#0D9488] to-[#065F5B]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_50%_70%_at_12%_15%,rgba(255,255,255,0.18),transparent_60%),radial-gradient(ellipse_45%_60%_at_88%_85%,rgba(94,234,212,0.28),transparent_65%)]"
-      />
+    <section aria-labelledby="digest-heading" className="relative isolate overflow-hidden bg-primary">
       <FloatingChemIcons items={BG_ICONS} className="-z-10" itemClassName="text-white" defaultOpacity={0.18} />
 
       <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:py-20">
@@ -85,12 +81,12 @@ export function NewsletterBanner() {
                   if (state.kind === "error") setState({ kind: "idle" })
                 }}
                 placeholder="you@example.com"
-                className="h-12 min-w-0 flex-1 rounded-full border border-white/30 bg-white/95 px-5 text-base text-slate-900 shadow-lg shadow-black/10 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-white/40"
+                className="h-12 min-w-0 flex-1 rounded-full border border-white/30 bg-white px-5 text-base text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-white/40"
               />
               <button
                 type="submit"
                 disabled={state.kind === "loading"}
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#065F5B] px-6 text-base font-semibold text-white shadow-lg shadow-black/20 ring-1 ring-white/20 transition-all hover:-translate-y-0.5 hover:bg-[#054e4b] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40 disabled:translate-y-0 disabled:opacity-80"
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-teal-800 px-6 text-base font-semibold text-white shadow-sm ring-1 ring-white/20 transition-all hover:-translate-y-0.5 hover:bg-teal-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40 disabled:translate-y-0 disabled:opacity-80"
               >
                 {state.kind === "loading" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
                 Subscribe Free

@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { Award, BookOpen, CalendarDays, Loader2, Mail, RotateCcw, TrendingUp, Trophy } from "lucide-react"
 import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
+import { PageHeader } from "@/components/page-header"
 import { useAuth } from "@/contexts/auth-context"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -90,20 +92,21 @@ export default function DashboardPage() {
 
   if (authLoading || (user && loading)) {
     return (
-      <>
+      <div className="flex min-h-screen flex-col bg-background">
         <Navigation />
-        <div className="flex min-h-[70vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex flex-1 items-center justify-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading" />
         </div>
-      </>
+        <Footer />
+      </div>
     )
   }
 
   if (!user) {
     return (
-      <>
+      <div className="flex min-h-screen flex-col bg-background">
         <Navigation />
-        <main className="container mx-auto px-4 py-16">
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-16 sm:px-6">
           <Card className="mx-auto max-w-md text-center">
             <CardHeader>
               <CardTitle>Sign In Required</CardTitle>
@@ -116,7 +119,8 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </main>
-      </>
+        <Footer />
+      </div>
     )
   }
 
@@ -132,20 +136,22 @@ export default function DashboardPage() {
   const showRank = Boolean(rank && rank.enabled)
 
   return (
-    <>
+    <div className="cc-portal flex min-h-screen flex-col bg-background">
       <Navigation />
-      <main className="container mx-auto space-y-6 px-4 py-6 sm:space-y-8 sm:py-8">
-        <header>
-          <p className="text-sm font-medium text-primary">Welcome back, {user.name}</p>
-          <h1 className="font-serif text-2xl font-bold sm:text-3xl">Student Dashboard</h1>
-          <p className="mt-1 text-muted-foreground">
-            Review your chemistry quiz performance and keep building momentum.
-          </p>
-        </header>
+      <PageHeader
+        eyebrow={`Welcome back, ${user.name}`}
+        title={
+          <>
+            Student <span className="text-primary">Dashboard</span>
+          </>
+        }
+        description="Review your chemistry quiz performance and keep building momentum."
+      />
+      <main className="mx-auto w-full max-w-7xl flex-1 space-y-6 px-4 pb-16 pt-8 sm:space-y-8 sm:px-6">
 
         <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
           {/* Profile Summary */}
-          <Card className="shadow-xs border-border">
+          <Card className="shadow-sm border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-primary" />
@@ -164,15 +170,15 @@ export default function DashboardPage() {
               {/* Overall Class Rank Badge when enabled */}
               {showRank && (
                 <div className="border-t pt-4">
-                  <div className="rounded-xl border border-amber-200/80 bg-gradient-to-br from-amber-50 to-amber-100/40 dark:border-amber-900/60 dark:from-amber-950/30 dark:to-background p-3.5 space-y-2">
+                  <div className="space-y-2 rounded-2xl border border-teal-200 bg-teal-50/60 p-3.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-                        <Trophy className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-800 flex items-center gap-1.5">
+                        <Trophy className="h-4 w-4 text-teal-600" />
                         Overall Class Standing
                       </span>
                       <Badge
                         variant="outline"
-                        className="border-amber-300 bg-amber-100/80 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 text-[11px] font-mono font-medium"
+                        className="border-teal-200 bg-white text-teal-800 text-[11px] font-mono font-medium"
                       >
                         {rank?.points ?? 0} Pts
                       </Badge>
@@ -180,7 +186,7 @@ export default function DashboardPage() {
 
                     {rank?.currentRank !== null ? (
                       <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-black text-amber-900 dark:text-amber-200 tracking-tight">
+                        <span className="text-2xl font-black text-slate-900 tracking-tight">
                           Rank #{rank?.currentRank}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -204,15 +210,15 @@ export default function DashboardPage() {
           </Card>
 
           {/* Metric Cards Grid */}
-          <div className={`grid grid-cols-2 gap-3 sm:gap-6 ${showRank ? "lg:grid-cols-4" : "sm:grid-cols-3"}`}>
+          <div className={`grid grid-cols-2 gap-3 sm:gap-6 ${showRank ? "" : "sm:grid-cols-3"}`}>
             {showRank && (
-              <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent shadow-xs">
+              <Card className="h-full justify-between shadow-sm">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xs font-medium text-muted-foreground sm:text-sm">Overall Rank</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Trophy className="mb-3 h-5 w-5 text-amber-500" />
-                  <p className="text-2xl font-bold sm:text-3xl text-amber-600 dark:text-amber-400">
+                  <Trophy className="mb-3 h-5 w-5 text-primary" />
+                  <p className="text-2xl font-bold sm:text-3xl text-slate-900">
                     {rank?.currentRank !== null ? `#${rank?.currentRank}` : "—"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -224,7 +230,7 @@ export default function DashboardPage() {
               </Card>
             )}
 
-            <Card className="shadow-xs">
+            <Card className="h-full justify-between shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-medium sm:text-sm">Total Quizzes Attempted</CardTitle>
               </CardHeader>
@@ -234,7 +240,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-xs">
+            <Card className="h-full justify-between shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-medium sm:text-sm">Average Percentage Score</CardTitle>
               </CardHeader>
@@ -244,12 +250,12 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className={`shadow-xs ${showRank ? "" : "col-span-2 sm:col-span-1"}`}>
+            <Card className={`h-full justify-between shadow-sm ${showRank ? "" : "col-span-2 sm:col-span-1"}`}>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-medium sm:text-sm">Highest Scoring Chapter</CardTitle>
               </CardHeader>
               <CardContent>
-                <Award className="mb-3 h-5 w-5 text-amber-600" />
+                <Award className="mb-3 h-5 w-5 text-primary" />
                 <p className="line-clamp-2 break-words font-semibold leading-snug">
                   {highest ? displayChapterName(highest.chapterName) : "No attempts yet"}
                 </p>
@@ -262,7 +268,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Quiz History */}
-        <Card className="shadow-xs">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle>Quiz History</CardTitle>
           </CardHeader>
@@ -283,7 +289,7 @@ export default function DashboardPage() {
                   {attempts.map((attempt) => {
                     const percentage = Math.round(Number(attempt.percentage))
                     return (
-                      <li key={attempt.id} className="rounded-xl border bg-card p-4 shadow-xs">
+                      <li key={attempt.id} className="rounded-2xl border bg-card p-4 shadow-sm">
                         <div className="flex items-start justify-between gap-3">
                           <p className="min-w-0 break-words font-semibold leading-snug">
                             {displayChapterName(attempt.chapterName)}
@@ -382,6 +388,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </main>
-    </>
+      <Footer />
+    </div>
   )
 }

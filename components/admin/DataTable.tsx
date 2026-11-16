@@ -157,7 +157,7 @@ export function DataTable<T extends Record<string, any>>({
                     if (!isServerPagination) setInternalPage(1);
                   }}
                   placeholder={searchPlaceholder}
-                  className="pl-9 text-sm"
+                  className="h-10 pl-9 text-sm"
                 />
               </div>
             )}
@@ -174,16 +174,16 @@ export function DataTable<T extends Record<string, any>>({
       {!error && (
         <>
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-xl border border-border/80 bg-card shadow-xs overflow-hidden">
+          <div className="hidden overflow-hidden rounded-2xl border border-slate-200/80 bg-card shadow-sm md:block dark:border-border">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/70">
+                  <TableRow className="border-b border-slate-200/80 bg-slate-50/80 hover:bg-slate-50/80 dark:border-border dark:bg-muted/40">
                     {columns.map((col, idx) => (
                       <TableHead
                         key={idx}
                         className={cn(
-                          'font-semibold text-xs tracking-wider uppercase text-muted-foreground whitespace-nowrap',
+                          'h-11 px-3 text-[11px] font-semibold uppercase tracking-wider whitespace-nowrap text-slate-500 dark:text-muted-foreground',
                           col.sortable && 'cursor-pointer select-none hover:text-foreground',
                           col.headerClassName
                         )}
@@ -237,11 +237,11 @@ export function DataTable<T extends Record<string, any>>({
                         onClick={onRowClick ? () => onRowClick(row) : undefined}
                         className={cn(
                           'transition-colors',
-                          onRowClick && 'cursor-pointer hover:bg-muted/40'
+                          onRowClick && 'cursor-pointer hover:bg-teal-50/40 dark:hover:bg-muted/40'
                         )}
                       >
                         {columns.map((col, cIdx) => (
-                          <TableCell key={cIdx} className={cn('py-3.5', col.className)}>
+                          <TableCell key={cIdx} className={cn('px-3 py-3.5', col.className)}>
                             {col.cell(row)}
                           </TableCell>
                         ))}
@@ -257,14 +257,14 @@ export function DataTable<T extends Record<string, any>>({
           <div className="md:hidden space-y-3">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-border bg-card space-y-3">
+                <div key={idx} className="p-4 rounded-2xl border border-border bg-card space-y-3">
                   <Skeleton className="h-5 w-2/3" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-1/2" />
                 </div>
               ))
             ) : displayData.length === 0 ? (
-              <div className="p-6 rounded-xl border border-border bg-card text-center">
+              <div className="p-6 rounded-2xl border border-border bg-card text-center">
                 <EmptyState
                   title={emptyTitle}
                   description={emptyDescription}
@@ -284,12 +284,12 @@ export function DataTable<T extends Record<string, any>>({
                   <div
                     key={getRowKey(row, rIdx)}
                     onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    className="p-4 rounded-xl border border-border bg-card shadow-xs space-y-2.5"
+                    className="space-y-2.5 rounded-2xl border border-slate-200/80 bg-card p-4 shadow-sm dark:border-border"
                   >
                     {columns.map((col, cIdx) => (
-                      <div key={cIdx} className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground font-medium">{col.header}:</span>
-                        <span>{col.cell(row)}</span>
+                      <div key={cIdx} className="flex items-start justify-between gap-4 text-xs">
+                        <span className="shrink-0 pt-0.5 font-medium text-slate-500 dark:text-muted-foreground">{col.header}</span>
+                        <div className="min-w-0 break-words text-right">{col.cell(row)}</div>
                       </div>
                     ))}
                   </div>
@@ -318,7 +318,7 @@ export function DataTable<T extends Record<string, any>>({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0"
+                    className="h-9 w-9 p-0"
                     disabled={currentPage <= 1}
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   >
@@ -331,7 +331,7 @@ export function DataTable<T extends Record<string, any>>({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0"
+                    className="h-9 w-9 p-0"
                     disabled={currentPage >= totalPages}
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   >

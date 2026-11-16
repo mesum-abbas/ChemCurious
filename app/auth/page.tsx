@@ -1,11 +1,6 @@
-import { Suspense } from "react";
-import { AuthForms } from "@/components/auth-forms";
+import { AuthForms } from "@/components/auth-forms"
 
+// AuthForms renders its own light-themed Suspense fallback (inside AuthShell).
 export default function AuthPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">Loading...</div>}>
-      <AuthForms />
-    </Suspense>
-  );
+  return <AuthForms />
 }
-

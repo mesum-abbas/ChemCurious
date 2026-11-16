@@ -173,7 +173,7 @@ export default function AdminAnalyticsPage() {
       {/* Accuracy Breakdowns: Difficulty & Topics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Difficulty Breakdown */}
-        <Card className="rounded-xl border border-border shadow-xs">
+        <Card className="rounded-2xl border shadow-sm">
           <CardHeader>
             <CardTitle className="font-serif text-base font-semibold">Accuracy by Difficulty</CardTitle>
             <CardDescription className="text-xs font-sans">
@@ -210,7 +210,7 @@ export default function AdminAnalyticsPage() {
         </Card>
 
         {/* Topic Breakdown */}
-        <Card className="rounded-xl border border-border shadow-xs">
+        <Card className="rounded-2xl border shadow-sm">
           <CardHeader>
             <CardTitle className="font-serif text-base font-semibold">Accuracy by Topic</CardTitle>
             <CardDescription className="text-xs font-sans">
@@ -251,7 +251,7 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Per-Chapter Performance Table */}
-      <Card className="rounded-xl border border-border shadow-xs">
+      <Card className="rounded-2xl border shadow-sm">
         <CardHeader>
           <CardTitle className="font-serif text-base font-semibold">Per-Chapter Analytics</CardTitle>
           <CardDescription className="text-xs font-sans">
@@ -259,10 +259,10 @@ export default function AdminAnalyticsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-md border border-border">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-border">
             <Table>
               <TableHeader>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-muted/40">
                   <TableHead className="text-xs font-semibold">Chapter</TableHead>
                   <TableHead className="text-xs font-semibold">Class</TableHead>
                   <TableHead className="text-xs font-semibold text-right">Attempts</TableHead>
@@ -282,8 +282,8 @@ export default function AdminAnalyticsPage() {
                 ) : (
                   perChapter.map((chap) => (
                     <TableRow key={chap.chapterId}>
-                      <TableCell className="text-xs font-medium text-foreground">
-                        {chap.title}
+                      <TableCell className="min-w-[200px] max-w-[320px] whitespace-normal text-xs font-medium text-foreground">
+                        <span className="line-clamp-2">{chap.title}</span>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-[11px] font-mono">
@@ -313,11 +313,11 @@ export default function AdminAnalyticsPage() {
                         <Progress value={chap.avgPercentage} className="h-2" />
                       </TableCell>
                       <TableCell>
-                        <Link href={`/admin/quizzes/chapters/${chap.chapterId}`}>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                        <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                          <Link href={`/admin/quizzes/chapters/${chap.chapterId}`} aria-label={`Open ${chap.title}`}>
                             <ArrowUpRight className="h-4 w-4" />
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
@@ -329,7 +329,7 @@ export default function AdminAnalyticsPage() {
       </Card>
 
       {/* Top 10 Most Missed Questions */}
-      <Card className="rounded-xl border border-border shadow-xs">
+      <Card className="rounded-2xl border shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-serif text-base font-semibold flex items-center gap-2">
@@ -345,10 +345,10 @@ export default function AdminAnalyticsPage() {
           </Badge>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto rounded-md border border-border">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-border">
             <Table>
               <TableHeader>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-muted/40">
                   <TableHead className="w-[50px] text-xs font-semibold">#</TableHead>
                   <TableHead className="text-xs font-semibold">Question</TableHead>
                   <TableHead className="text-xs font-semibold">Chapter</TableHead>
@@ -372,13 +372,15 @@ export default function AdminAnalyticsPage() {
                         <TableCell className="text-xs font-mono text-muted-foreground">
                           {idx + 1}
                         </TableCell>
-                        <TableCell className="max-w-[340px]">
-                          <p className="text-xs font-medium text-foreground line-clamp-2" title={plainText}>
+                        <TableCell className="min-w-[240px] max-w-[360px] whitespace-normal">
+                          <p className="line-clamp-2 text-xs font-medium text-foreground" title={plainText}>
                             {plainText}
                           </p>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                          {q.chapterTitle}
+                        <TableCell className="min-w-[160px] max-w-[240px] whitespace-normal">
+                          <p className="line-clamp-2 text-xs text-muted-foreground" title={q.chapterTitle}>
+                            {q.chapterTitle}
+                          </p>
                         </TableCell>
                         <TableCell className="text-xs text-right font-mono text-muted-foreground">
                           {q.answers}
@@ -389,11 +391,9 @@ export default function AdminAnalyticsPage() {
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Link href={`/admin/quizzes/questions/${q.questionId}`}>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs font-sans text-primary">
-                              Edit
-                            </Button>
-                          </Link>
+                          <Button asChild variant="ghost" size="sm" className="h-8 text-xs font-sans text-primary">
+                            <Link href={`/admin/quizzes/questions/${q.questionId}`}>Edit</Link>
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
